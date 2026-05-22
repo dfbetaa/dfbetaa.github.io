@@ -245,10 +245,29 @@ body.dark .section-wm{color:rgba(196,18,48,.06);}
 .project-tags{display:flex;flex-wrap:wrap;gap:.3rem;justify-content:flex-end;}
 .tag{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.04em;padding:.18rem .5rem;border:1px solid rgba(139,0,30,.18);border-radius:2px;color:var(--muted);white-space:nowrap;transition:all .22s;}
 .project:hover .tag{border-color:rgba(139,0,30,.42);color:var(--accent);}
-.detail-expand-icon{position:absolute;top:2.25rem;right:0;width:1.5rem;height:1.5rem;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:transform .3s,color .3s;font-size:1.1rem;line-height:1;}
-.project:hover .detail-expand-icon{color:var(--accent);}
-.project.expanded .detail-expand-icon{transform:rotate(45deg);color:var(--accent);}
+.detail-expand-icon{position:absolute;top:2.25rem;right:0;width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;color:var(--accent);border:1px solid rgba(139,0,30,.3);border-radius:50%;transition:transform .3s,color .3s,background .3s,border-color .3s;font-size:1.05rem;line-height:1;font-family:'JetBrains Mono',monospace;font-weight:500;}
+.project:hover .detail-expand-icon{background:var(--accent);color:var(--paper);border-color:var(--accent);}
+.project.expanded .detail-expand-icon{transform:rotate(45deg);background:var(--accent);color:var(--paper);border-color:var(--accent);}
 @media(max-width:900px){.detail-expand-icon{display:none;}}
+
+/* ── Click hint ── */
+.projects-hint{
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 1.5rem 7rem;display:flex;align-items:center;gap:.5rem;
+  opacity:.75;position:relative;z-index:1;
+}
+.projects-hint::before{content:'↓';color:var(--accent);font-size:.75rem;}
+@media(max-width:900px){.projects-hint{margin-left:0;font-size:.6rem;}}
+
+/* ── Mobile tap hint ── */
+.project-tap-hint{
+  display:none;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);margin-top:.75rem;
+  align-items:center;gap:.35rem;
+}
+.project-tap-hint::before{content:'＋';color:var(--accent);font-size:.7rem;}
+.project.expanded .project-tap-hint::before{content:'×';}
+@media(max-width:900px){.project-tap-hint{display:flex;}}
 .project-detail{grid-column:1/-1;display:none;padding:2rem 0 1rem 6.5rem;border-top:1px dashed var(--rule-s);margin-top:1.25rem;}
 @media(max-width:900px){.project-detail{padding-left:0;}}
 .project.expanded .project-detail{display:block;}
@@ -449,6 +468,7 @@ body.dark .contact-wm{color:rgba(196,18,48,.07);}
       <div class="section-num" data-i18n="work_num">02 / Work</div>
       <h2 class="section-title" data-i18n-md="work_title"><em>What I've shipped.</em></h2>
     </div>
+    <p class="projects-hint" data-i18n="projects_hint">Click any project to expand details</p>
     <div class="filter-row">
       <button class="pill active" data-filter="all"><span data-i18n="pill_all">All</span><span class="count">11</span></button>
       <button class="pill" data-filter="ai"><span data-i18n="pill_ai">Data Science &amp; AI</span><span class="count">5</span></button>
@@ -636,6 +656,7 @@ var T = {
     d_lang_val:'Spanish (native) · English (fluent)',
     work_num:'02 / Work',
     work_title:'*What I\'ve shipped.*',
+    projects_hint:'Click any project to expand details',
     pill_all:'All', pill_ai:'Data Science & AI', pill_ind:'Industrial & Automation', pill_feat:'Featured',
     exp_num:'03 / Experience',
     exp_title:'*Where I\'ve worked* and led.',
@@ -682,6 +703,7 @@ var T = {
     d_lang_val:'Español (nativo) · Inglés (fluido)',
     work_num:'02 / Proyectos',
     work_title:'*Lo que he construido.*',
+    projects_hint:'Clic en un proyecto para ver detalles',
     pill_all:'Todos', pill_ai:'Datos y IA', pill_ind:'Industrial y Automatización', pill_feat:'Destacados',
     exp_num:'03 / Experiencia',
     exp_title:'*Dónde he trabajado* y liderado.',
@@ -1059,6 +1081,11 @@ function renderProjects(filter) {
     p.tags.forEach(function(t) { mobileTags.appendChild(makeTag(t)); });
     mobileMeta.appendChild(mobileTags);
     main.appendChild(mobileMeta);
+
+    var tapHint = document.createElement('div');
+    tapHint.className = 'project-tap-hint';
+    tapHint.textContent = lang === 'es' ? 'Ver detalles' : 'See details';
+    main.appendChild(tapHint);
     el.appendChild(main);
 
     var metaCol = document.createElement('div');
