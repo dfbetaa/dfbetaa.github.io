@@ -185,8 +185,8 @@ body.dark .section-wm{color:rgba(196,18,48,.06);}
 .section-title em{font-style:italic;color:var(--accent);font-weight:700;}
 
 /* ── About ── */
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;margin-left:7rem;position:relative;z-index:1;}
-@media(max-width:900px){.about-grid{grid-template-columns:1fr;gap:2.5rem;margin-left:0;}}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;margin-left:7rem;margin-right:7rem;position:relative;z-index:1;}
+@media(max-width:900px){.about-grid{grid-template-columns:1fr;gap:2.5rem;margin-left:0;margin-right:0;}}
 .about-text p{font-size:1rem;line-height:1.72;color:var(--ink-soft);font-weight:300;margin-bottom:1.2rem;text-align:justify;}
 .about-text p strong{color:var(--ink);font-weight:600;}
 .about-text p em{font-family:'Fraunces',serif;font-style:italic;color:var(--accent);}
@@ -196,8 +196,8 @@ body.dark .section-wm{color:rgba(196,18,48,.06);}
 .detail-value strong{font-weight:600;}
 
 /* ── Filter pills ── */
-.filter-row{display:flex;flex-wrap:wrap;gap:.6rem;margin:0 0 3rem 7rem;position:relative;z-index:1;}
-@media(max-width:900px){.filter-row{margin-left:0;}}
+.filter-row{display:flex;flex-wrap:wrap;gap:.6rem;margin:0 7rem 3rem 7rem;position:relative;z-index:1;}
+@media(max-width:900px){.filter-row{margin-left:0;margin-right:0;}}
 .pill{
   background:transparent;border:1px solid rgba(139,0,30,.22);color:var(--muted);
   padding:.45rem 1rem;border-radius:999px;font-family:'JetBrains Mono',monospace;
@@ -266,8 +266,8 @@ body.dark .section-wm{color:rgba(196,18,48,.06);}
 .metric-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;}
 
 /* ── Experience ── */
-.exp-timeline{margin-left:7rem;display:flex;flex-direction:column;position:relative;z-index:1;}
-@media(max-width:900px){.exp-timeline{margin-left:0;}}
+.exp-timeline{margin-left:7rem;margin-right:7rem;display:flex;flex-direction:column;position:relative;z-index:1;}
+@media(max-width:900px){.exp-timeline{margin-left:0;margin-right:0;}}
 .exp-item{display:grid;grid-template-columns:13rem 1fr;gap:3rem;padding:2.5rem 0;border-bottom:1px solid var(--rule-s);}
 .exp-item:last-child{border-bottom:none;padding-bottom:0;}
 @media(max-width:900px){.exp-item{grid-template-columns:1fr;gap:.75rem;}}
@@ -278,8 +278,8 @@ body.dark .section-wm{color:rgba(196,18,48,.06);}
 .exp-desc{font-size:.88rem;line-height:1.68;color:var(--ink-soft);font-weight:300;max-width:40rem;text-align:justify;}
 
 /* ── Skills ── */
-.skills-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:3rem;margin-left:7rem;position:relative;z-index:1;}
-@media(max-width:900px){.skills-grid{grid-template-columns:1fr;gap:2rem;margin-left:0;}}
+.skills-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:3rem;margin-left:7rem;margin-right:7rem;position:relative;z-index:1;}
+@media(max-width:900px){.skills-grid{grid-template-columns:1fr;gap:2rem;margin-left:0;margin-right:0;}}
 .skill-block h3{font-family:'JetBrains Mono',monospace;font-size:.67rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;padding-bottom:.7rem;border-bottom:2px solid rgba(139,0,30,.15);}
 .skill-list{display:flex;flex-wrap:wrap;gap:.5rem 0;}
 .skill-list span{font-family:'Fraunces',serif;font-size:1.05rem;color:var(--ink-soft);font-weight:400;}
@@ -470,7 +470,7 @@ body.dark .contact-wm{color:rgba(196,18,48,.07);}
     </div>
     <div class="exp-timeline">
       <div class="exp-item reveal d1">
-        <div class="exp-date">Jun 8 – Jul 31 2026</div>
+        <div class="exp-date">Jun – Jul 2026</div>
         <div>
           <div class="exp-role" data-i18n="exp1_role">Social Values Intern</div>
           <div class="exp-org" data-i18n-md="exp1_org">Quickline Communications *· Hull, UK*</div>
@@ -859,7 +859,7 @@ var PROJECTS = [
     }
   },
   { id:'abb', cat:'industrial', featured:true, year:'Jan – May 2025', tags:['ABB IRB 4600','PackML','Cognex Vision','PLC'],
-    en:{ title:'Automated Robotic Packaging Cell', client:'ABB · Customer ABC Line 5',
+    en:{ title:'Automated Robotic Packaging Cell', client:'ABB · Tecnológico de Monterrey',
       summary:'Replaced two manual operators with an ABB IRB 4600 cell. PackML control, Cognex In-Sight inspection, CAT 3+ safety. 99.5% OEE in simulation; 1.8-year ROI.',
       bullets:[
         ['Designed',' an automated robotic packaging cell using an ABB IRB 4600-40, PackML-compliant PLC control, and a Cognex In-Sight 8402 vision system.'],
@@ -868,7 +868,7 @@ var PROJECTS = [
       ],
       metrics:[{value:'24',suffix:'/min',label:'Bottles throughput'},{value:'99.5%',label:'Simulated OEE'},{value:'1.8 yr',label:'ROI payback'}]
     },
-    es:{ title:'Celda Robótica de Empaque Automatizado', client:'ABB · Cliente ABC Línea 5',
+    es:{ title:'Celda Robótica de Empaque Automatizado', client:'ABB · Tecnológico de Monterrey',
       summary:'Reemplazó a dos operadores manuales con una celda ABB IRB 4600. Control PackML, inspección Cognex In-Sight, seguridad CAT 3+. 99.5% OEE en simulación; ROI de 1.8 años.',
       bullets:[
         ['Diseñé',' una celda de empaque robótico automatizado usando un ABB IRB 4600-40, control PLC compatible con PackML y un sistema de visión Cognex In-Sight 8402.'],
@@ -879,7 +879,7 @@ var PROJECTS = [
     }
   },
   { id:'schneider', cat:'industrial', featured:true, year:'Jan – Jun 2025', tags:['Lexium cobot','Machine Vision','FMEA','Digital Twin'],
-    en:{ title:'Vision-Based Quality Inspection (WS9)', client:'Schneider Electric · Interruptores Linea',
+    en:{ title:'Vision-Based Quality Inspection (WS9)', client:'Schneider Electric · Tecnológico de Monterrey',
       summary:'Automated the bottleneck of a circuit-breaker line. Inverted-mount cobot for overhead inspection, full digital twin, FMEA across mechanical/vision/safety risks.',
       bullets:[
         ['Developed',' a vision-based inspection system using a Lexium cobot (overhead inverted mount), PLC control, and smart cameras to automate WS9, the line\'s bottleneck.'],
@@ -888,7 +888,7 @@ var PROJECTS = [
       ],
       metrics:[{value:'75%',label:'Inspection time cut'},{value:'40%+',label:'Projected ROI'},{value:'65→80%',label:'Line efficiency target'}]
     },
-    es:{ title:'Inspección de Calidad por Visión (WS9)', client:'Schneider Electric · Interruptores Línea',
+    es:{ title:'Inspección de Calidad por Visión (WS9)', client:'Schneider Electric · Tecnológico de Monterrey',
       summary:'Automatizó el cuello de botella de una línea de interruptores. Cobot montado invertido para inspección aérea, gemelo digital completo, FMEA de riesgos mecánicos, de visión y de seguridad.',
       bullets:[
         ['Desarrollé',' un sistema de inspección por visión usando un cobot Lexium (montado invertido), control PLC y cámaras inteligentes para automatizar el WS9, el cuello de botella de la línea.'],
@@ -899,7 +899,7 @@ var PROJECTS = [
     }
   },
   { id:'mit', cat:'industrial', year:'2025', tags:['KUKA','PLC','Digital Twin','HMI'],
-    en:{ title:'AL-FrED-0 Robotic Assembly Workstation', client:'MIT Collaboration · KUKA',
+    en:{ title:'AL-FrED-0 Robotic Assembly Workstation', client:'MIT Collaboration · Tecnológico de Monterrey',
       summary:'Automated an industrial robotic workstation as part of an MIT collaboration on flexible manufacturing. Custom fixtures, safety logic, validated cycle time.',
       bullets:[
         ['Automated',' the workstation using a KUKA robot and PLC-controlled assembly logic, as part of an MIT collaboration on flexible manufacturing.'],
@@ -908,7 +908,7 @@ var PROJECTS = [
       ],
       metrics:[{value:'KUKA + PLC',label:'Stack'},{value:'MIT',label:'Research partner'},{value:'Digital twin',label:'Validation method'}]
     },
-    es:{ title:'Estación de Ensamble Robótico AL-FrED-0', client:'Colaboración MIT · KUKA',
+    es:{ title:'Estación de Ensamble Robótico AL-FrED-0', client:'Colaboración MIT · Tecnológico de Monterrey',
       summary:'Automatizó una estación robótica industrial en el marco de una colaboración con MIT sobre manufactura flexible. Fixtures personalizados, lógica de seguridad, tiempo de ciclo validado.',
       bullets:[
         ['Automaticé',' la estación usando un robot KUKA y lógica de ensamble controlada por PLC, en el marco de una colaboración con MIT sobre manufactura flexible.'],
@@ -919,7 +919,7 @@ var PROJECTS = [
     }
   },
   { id:'deere', cat:'industrial', featured:true, year:'Aug – Nov 2024', tags:['STM32','FreeRTOS','PID Control','Sensor Fusion'],
-    en:{ title:'Project DAMM: Autonomous Mobile Vehicle', client:'John Deere · Industrial Material Transport',
+    en:{ title:'Project DAMM: Autonomous Mobile Vehicle', client:'John Deere · Tecnológico de Monterrey',
       summary:'Autonomous prototype for industrial material transport. STM32 + FreeRTOS scheduling, PID dual-loop control, sensor-fused obstacle avoidance, dual auto/manual operation.',
       bullets:[
         ['Developed',' an autonomous mobile vehicle for industrial material transport using STM32F103C8T6, PID speed and direction loops, and FreeRTOS for real-time task scheduling.'],
@@ -928,7 +928,7 @@ var PROJECTS = [
       ],
       metrics:[{value:'2',label:'Control loops (PID)'},{value:'4',label:'Sensors integrated'},{value:'Dual',label:'Auto / manual modes'}]
     },
-    es:{ title:'Proyecto DAMM: Vehículo Móvil Autónomo', client:'John Deere · Transporte Industrial de Materiales',
+    es:{ title:'Proyecto DAMM: Vehículo Móvil Autónomo', client:'John Deere · Tecnológico de Monterrey',
       summary:'Prototipo autónomo para transporte industrial de materiales. STM32 + FreeRTOS, control PID dual, evasión de obstáculos con fusión de sensores, operación auto/manual.',
       bullets:[
         ['Desarrollé',' un vehículo móvil autónomo para transporte industrial usando STM32F103C8T6, lazos PID de velocidad y dirección, y FreeRTOS para planificación de tareas en tiempo real.'],
@@ -939,7 +939,7 @@ var PROJECTS = [
     }
   },
   { id:'deere-thermal', cat:'industrial', year:'Aug – Dec 2024', tags:['Thermodynamics','Sensor-based Control','Simulation'],
-    en:{ title:'Thermal Control for Tractor Cabin', client:'John Deere · Troubleshooting Processes',
+    en:{ title:'Thermal Control for Tractor Cabin', client:'John Deere · Tecnológico de Monterrey',
       summary:'First-principles thermal modelling to maintain cabin temperature at 50°C in 45°C ambient. Specified the required convection coefficient.',
       bullets:[
         ['Designed',' a sensor-based temperature control system applying Stefan-Boltzmann radiation, conduction, and forced convection from first principles.'],
@@ -948,7 +948,7 @@ var PROJECTS = [
       ],
       metrics:[{value:'50°C',label:'Target cabin temp'},{value:'45°C',label:'Ambient'},{value:'35.12 W/m²K',label:'Convection coefficient'}]
     },
-    es:{ title:'Control Térmico para Cabina de Tractor', client:'John Deere · Procesos de Resolución de Problemas',
+    es:{ title:'Control Térmico para Cabina de Tractor', client:'John Deere · Tecnológico de Monterrey',
       summary:'Modelado térmico desde primeros principios para mantener la cabina a 50°C con 45°C de temperatura ambiente. Especificación del coeficiente de convección requerido.',
       bullets:[
         ['Diseñé',' un sistema de control de temperatura basado en sensores aplicando radiación de Stefan-Boltzmann, conducción y convección forzada desde primeros principios.'],
@@ -959,7 +959,7 @@ var PROJECTS = [
     }
   },
   { id:'carrier', cat:'industrial', year:'Feb – Apr 2024', tags:['SolidWorks','FEA','Materials Selection'],
-    en:{ title:'Brazing Torch Industrial Fixture', client:'Carrier · Materials Analysis & Manufacturing',
+    en:{ title:'Brazing Torch Industrial Fixture', client:'Carrier · Tecnológico de Monterrey',
       summary:'Designed a safety fixture in direct response to a real workplace incident. CAD model, 3D-printed prototype, finite-element thermal and structural validation.',
       bullets:[
         ['Designed',' a safety-oriented industrial torch holder in response to a real workplace incident (operator first-degree burn, July 2023).'],
@@ -968,7 +968,7 @@ var PROJECTS = [
       ],
       metrics:[{value:'1',label:'Incident addressed'},{value:'FEA',label:'Validation method'},{value:'PLA',label:'Prototype material'}]
     },
-    es:{ title:'Fixture Industrial para Soplete de Soldadura', client:'Carrier · Análisis de Materiales y Manufactura',
+    es:{ title:'Fixture Industrial para Soplete de Soldadura', client:'Carrier · Tecnológico de Monterrey',
       summary:'Diseñó un fixture de seguridad en respuesta directa a un incidente real en planta. Modelo CAD, prototipo impreso en 3D, validación FEA térmica y estructural.',
       bullets:[
         ['Diseñé',' un soporte de soplete industrial orientado a la seguridad en respuesta a un incidente real en planta (quemadura de primer grado a operador, julio 2023).'],
