@@ -6,327 +6,408 @@
 <title>David Betancourth · Industrial AI & Mechatronics</title>
 <meta name="description" content="Mechatronics engineering student and MSc AI & Data Science candidate. Industry projects with ABB, Schneider Electric, John Deere, Carrier, and MIT." />
 
+<script>
+/* Set theme before first paint to avoid flash */
+(function(){
+  try{
+    var t = localStorage.getItem('theme');
+    if(!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  }catch(e){ document.documentElement.dataset.theme = 'light'; }
+})();
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 
+/* ── Tokens ── */
 :root{
-  --paper:    #F5EFE0;
-  --paper-2:  #EDE6D4;
-  --ink:      #1A1A1A;
-  --ink-soft: #4D3D35;
-  --muted:    #9A8A7A;
-  --rule:     #DDD5C0;
-  --rule-s:   rgba(139,0,30,.1);
-  --accent:   #8B001E;
-  --accent-2: #C41230;
-  --bg-card:  #EDE6D4;
+  --bg:        #F5F4F2;
+  --bg-2:      #ECEBE8;
+  --ink:       #141317;
+  --ink-soft:  #45434C;
+  --muted:     #75727D;
+  --line:      rgba(20,19,23,.10);
+  --accent:    #A80D2D;
+  --accent-hi: #D91E48;
+  --fill:      #AE0F30;   /* button fill, white text on top */
+  --on-fill:   #FBF9FA;
+
+  /* glass (web glassmorphism approximation, not Apple's native material) */
+  --gl-base:   rgba(255,255,255,.42);
+  --gl-hi:     rgba(255,255,255,.55);
+  --gl-lo:     rgba(255,255,255,.10);
+  --gl-brd:    rgba(255,255,255,.65);
+  --gl-edge:   rgba(20,19,23,.08);
+  --gl-spec:   rgba(255,255,255,.85);
+  --gl-shadow: rgba(30,10,18,.10);
+  --spot:      rgba(168,13,45,.08);
+
+  --aur-1: rgba(174,15,48,.13);
+  --aur-2: rgba(217,30,72,.08);
+  --aur-3: rgba(120,60,90,.07);
+
+  --r-card: 20px;
+  --r-pill: 999px;
 }
 
-body.dark{
-  --paper:    #0E0A08;
-  --paper-2:  #160E0B;
-  --ink:      #F5EFE0;
-  --ink-soft: #C8B8A8;
-  --muted:    #7A6A5A;
-  --rule:     #2A1A14;
-  --rule-s:   rgba(196,18,48,.15);
-  --accent:   #C41230;
-  --accent-2: #E84060;
-  --bg-card:  #160E0B;
+html[data-theme="dark"]{
+  --bg:        #0B0A0D;
+  --bg-2:      #131118;
+  --ink:       #F4F2F5;
+  --ink-soft:  #B7B3C0;
+  --muted:     #837F8E;
+  --line:      rgba(244,242,245,.09);
+  --accent:    #EF5273;
+  --accent-hi: #FF7490;
+  --fill:      #B01031;
+  --on-fill:   #FBF9FA;
+
+  --gl-base:   rgba(255,255,255,.045);
+  --gl-hi:     rgba(255,255,255,.10);
+  --gl-lo:     rgba(255,255,255,.015);
+  --gl-brd:    rgba(255,255,255,.14);
+  --gl-edge:   rgba(255,255,255,.06);
+  --gl-spec:   rgba(255,255,255,.22);
+  --gl-shadow: rgba(0,0,0,.45);
+  --spot:      rgba(239,82,115,.10);
+
+  --aur-1: rgba(176,16,49,.22);
+  --aur-2: rgba(239,82,115,.10);
+  --aur-3: rgba(90,40,120,.10);
 }
 
 body{
   font-family:'Manrope',-apple-system,BlinkMacSystemFont,sans-serif;
-  background:var(--paper);color:var(--ink);
-  font-weight:400;line-height:1.55;font-size:16px;
+  background:var(--bg);color:var(--ink);
+  font-weight:400;line-height:1.6;font-size:16px;
   -webkit-font-smoothing:antialiased;
   transition:background .5s,color .5s;
   overflow-x:hidden;
 }
 
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:1;
-  background-image:
-    radial-gradient(circle at 20% 30%,rgba(139,0,30,.03) 0%,transparent 50%),
-    radial-gradient(circle at 80% 70%,rgba(139,0,30,.02) 0%,transparent 50%);
+/* ── Aurora backdrop ── */
+.aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.aurora span{position:absolute;border-radius:50%;filter:blur(90px);will-change:transform;}
+.aurora .a1{width:55vw;height:55vw;top:-18vw;left:-12vw;background:var(--aur-1);animation:drift1 46s ease-in-out infinite alternate;}
+.aurora .a2{width:44vw;height:44vw;top:30vh;right:-16vw;background:var(--aur-2);animation:drift2 58s ease-in-out infinite alternate;}
+.aurora .a3{width:38vw;height:38vw;bottom:-14vw;left:22vw;background:var(--aur-3);animation:drift3 52s ease-in-out infinite alternate;}
+@keyframes drift1{to{transform:translate(9vw,7vh) scale(1.12);}}
+@keyframes drift2{to{transform:translate(-8vw,-9vh) scale(1.08);}}
+@keyframes drift3{to{transform:translate(6vw,-6vh) scale(1.15);}}
+
+/* ── Grain (fixed, non-scrolling) ── */
+body::after{
+  content:'';position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-body.dark::before{
-  background-image:
-    radial-gradient(circle at 20% 30%,rgba(196,18,48,.05) 0%,transparent 50%),
-    radial-gradient(circle at 80% 70%,rgba(196,18,48,.03) 0%,transparent 50%);
+/* ── Scroll progress (CSS scroll-driven, no JS scroll listener) ── */
+#progress{position:fixed;top:0;left:0;height:2px;width:100%;background:linear-gradient(90deg,var(--fill),var(--accent-hi));transform-origin:left;transform:scaleX(0);z-index:200;}
+@supports (animation-timeline: scroll()){
+  #progress{animation:progress-grow linear both;animation-timeline:scroll(root);}
+  @keyframes progress-grow{from{transform:scaleX(0);}to{transform:scaleX(1);}}
 }
-
-#progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--accent);width:0;z-index:999;transition:width .1s linear;}
 
 .container{max-width:1200px;margin:0 auto;padding:0 2.5rem;position:relative;z-index:2;}
 @media(max-width:720px){.container{padding:0 1.25rem;}}
 
-/* ── Nav ── */
-.topnav{
-  position:fixed;top:3px;left:0;right:0;z-index:100;
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  background:color-mix(in srgb,var(--paper) 88%,transparent);
-  border-bottom:1px solid var(--rule-s);transition:all .4s;
+/* ── Glass primitive ── */
+.glass{
+  position:relative;isolation:isolate;
+  background:linear-gradient(135deg,var(--gl-hi),var(--gl-lo)),var(--gl-base);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);
+  backdrop-filter:blur(18px) saturate(160%);
+  border:1px solid var(--gl-edge);
+  box-shadow:inset 0 1px 0 var(--gl-spec),inset 0 -1px 0 var(--gl-lo),0 14px 44px var(--gl-shadow);
 }
-.topnav-inner{max-width:1200px;margin:0 auto;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;}
-.topnav-mark{font-family:'Fraunces',serif;font-weight:900;font-size:1.2rem;letter-spacing:-.03em;color:var(--ink);}
+@media (prefers-reduced-transparency: reduce){
+  .glass{background:var(--bg-2);backdrop-filter:none;-webkit-backdrop-filter:none;}
+}
+
+/* spotlight that follows the cursor */
+.spot::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;opacity:0;z-index:-1;
+  background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),var(--spot),transparent 65%);
+  transition:opacity .45s;pointer-events:none;
+}
+.spot:hover::before{opacity:1;}
+
+/* ── Nav: floating glass capsule ── */
+.topnav{
+  position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:100;
+  width:min(1160px,calc(100% - 2rem));
+  border-radius:var(--r-pill);
+  padding:.55rem 1.4rem;
+  display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  transition:box-shadow .4s;
+}
+.topnav-mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.15rem;letter-spacing:-.03em;color:var(--ink);text-decoration:none;}
 .topnav-mark .dot{color:var(--accent);}
-.topnav-links{display:flex;gap:2rem;align-items:center;}
+.topnav-links{display:flex;gap:1.6rem;align-items:center;}
 .topnav-links a{
-  color:var(--muted);text-decoration:none;
-  font-family:'JetBrains Mono',monospace;font-size:.68rem;
-  font-weight:500;letter-spacing:.1em;text-transform:uppercase;
-  transition:color .25s;position:relative;
+  color:var(--ink-soft);text-decoration:none;
+  font-size:.82rem;font-weight:600;letter-spacing:.01em;
+  transition:color .25s;position:relative;padding:.2rem 0;
 }
 .topnav-links a::after{
-  content:'';position:absolute;bottom:-3px;left:0;
-  width:0;height:1px;background:var(--accent);
-  transition:width .3s cubic-bezier(.16,1,.3,1);
+  content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;border-radius:2px;
+  background:var(--accent);transition:width .3s cubic-bezier(.16,1,.3,1);
 }
-.topnav-links a:hover{color:var(--accent);}
-.topnav-links a:hover::after{width:100%;}
+.topnav-links a:hover{color:var(--ink);}
+.topnav-links a:hover::after,.topnav-links a.nav-active::after{width:100%;}
+.topnav-links a.nav-active{color:var(--ink);}
+.nav-actions{display:flex;gap:.5rem;align-items:center;}
 .theme-toggle,.lang-toggle{
-  background:none;border:1px solid rgba(139,0,30,.35);
-  color:var(--accent);padding:.3rem .75rem;border-radius:999px;
+  background:transparent;border:1px solid var(--line);
+  color:var(--ink-soft);padding:.34rem .8rem;border-radius:var(--r-pill);
   cursor:pointer;font-family:'JetBrains Mono',monospace;
-  font-size:.65rem;letter-spacing:.08em;transition:all .25s;
+  font-size:.66rem;letter-spacing:.06em;font-weight:500;transition:all .25s;
 }
-.theme-toggle:hover,.lang-toggle:hover{background:var(--accent);color:var(--paper);}
-@media(max-width:720px){
-  .topnav-inner{padding:.75rem 1.25rem;}
-  .topnav-links{gap:.75rem;}
+.theme-toggle:hover,.lang-toggle:hover{border-color:var(--accent);color:var(--accent);}
+@media(max-width:760px){
+  .topnav{padding:.5rem 1rem;}
   .topnav-links a{display:none;}
-  .theme-toggle,.lang-toggle{display:inline-block;}
+  .topnav-links{gap:.5rem;}
 }
 
 /* ── Hero ── */
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:10rem 0 6rem;position:relative;}
-.hero-watermark{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);
-  font-family:'Fraunces',serif;font-weight:900;
-  font-size:clamp(6rem,17vw,15rem);line-height:.85;letter-spacing:-.05em;
-  color:rgba(139,0,30,.06);white-space:nowrap;pointer-events:none;user-select:none;text-align:center;z-index:0;
-}
-body.dark .hero-watermark{color:rgba(196,18,48,.07);}
-.hero .container{position:relative;z-index:2;}
-
-.hero-meta{
-  display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem;
-  font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;
-  opacity:0;animation:fadeUp .7s .15s both;
-}
-.hero-meta::before{content:'';width:2rem;height:1px;background:var(--accent);flex-shrink:0;}
-
+.hero{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;padding:7.5rem 0 4rem;position:relative;}
 .hero h1{
-  font-family:'Fraunces',serif;font-weight:900;
-  font-size:clamp(3.8rem,8.5vw,8rem);line-height:.9;letter-spacing:-.045em;color:var(--ink);
-  opacity:0;animation:fadeUp .85s .3s both;
+  font-family:'Bricolage Grotesque',sans-serif;font-weight:800;
+  font-size:clamp(3.4rem,9vw,7.6rem);line-height:.96;letter-spacing:-.035em;color:var(--ink);
+  opacity:0;animation:fadeUp .85s .22s both;
 }
-.hero h1 em{font-style:italic;color:var(--accent);font-weight:700;}
-.hero h1 .period{color:var(--accent);}
-
-.hero-rule{height:3px;background:linear-gradient(90deg,var(--accent),rgba(139,0,30,.08));width:0;margin:2.25rem 0;animation:growRule .7s .75s cubic-bezier(.16,1,.3,1) forwards;}
-@keyframes growRule{to{width:min(44rem,85%);}}
+.hero h1 .ln2{
+  display:block;
+  background:linear-gradient(92deg,var(--accent) 0%,var(--accent-hi) 55%,var(--accent) 100%);
+  background-size:200% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:sheen 7s ease-in-out infinite;
+}
+@keyframes sheen{0%,100%{background-position:0% 0;}50%{background-position:100% 0;}}
 
 .hero-tagline{
-  font-family:'Fraunces',serif;font-size:clamp(1.2rem,2vw,1.6rem);
-  font-weight:300;font-style:italic;color:var(--ink-soft);line-height:1.4;margin-bottom:1.25rem;
-  opacity:0;animation:fadeUp .85s .5s both;
+  margin-top:1.6rem;max-width:34rem;
+  font-size:clamp(1.05rem,1.6vw,1.3rem);line-height:1.5;color:var(--ink-soft);font-weight:400;
+  opacity:0;animation:fadeUp .85s .38s both;
 }
-.hero-tagline strong{font-style:normal;color:var(--ink);font-weight:700;}
+.hero-tagline strong{color:var(--ink);font-weight:700;}
 
-.hero-lede{
-  max-width:46rem;font-size:clamp(.95rem,1.2vw,1.05rem);line-height:1.75;color:var(--ink-soft);font-weight:300;text-align:justify;
-  opacity:0;animation:fadeUp .85s .6s both;
+.hero-ctas{display:flex;gap:.9rem;margin-top:2.4rem;flex-wrap:wrap;opacity:0;animation:fadeUp .85s .52s both;}
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.85rem 1.7rem;border-radius:var(--r-pill);
+  font-family:'Manrope',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.01em;
+  text-decoration:none;cursor:pointer;border:none;
+  transition:transform .25s cubic-bezier(.16,1,.3,1),box-shadow .25s,background .25s,color .25s;
+  will-change:transform;white-space:nowrap;
 }
-.hero-lede strong{color:var(--ink);font-weight:600;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--fill);color:var(--on-fill);box-shadow:0 10px 30px rgba(174,15,48,.28);}
+.btn-primary:hover{background:var(--accent-hi);box-shadow:0 14px 38px rgba(217,30,72,.32);}
+.btn-ghost{color:var(--ink);border-radius:var(--r-pill);}
+.btn-ghost:hover{color:var(--accent);}
 
-.hero-stats{
-  display:grid;grid-template-columns:repeat(4,1fr);max-width:46rem;margin-top:3.5rem;
-  border:1px solid rgba(139,0,30,.2);opacity:0;animation:fadeUp .85s .75s both;
-}
-.stat{padding:1.35rem 1.25rem;border-right:1px solid rgba(139,0,30,.15);position:relative;overflow:hidden;}
-.stat:last-child{border-right:none;}
-.stat::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.16,1,.3,1);}
-.stat:hover::after{transform:scaleX(1);}
-.stat-value{font-family:'Fraunces',serif;font-size:clamp(1.9rem,3vw,2.6rem);font-weight:900;color:var(--ink);line-height:1;letter-spacing:-.03em;}
-.stat-value .sup{color:var(--accent);font-size:.48em;vertical-align:super;}
-.stat-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:.35rem;}
+@media(max-width:720px){.hero{padding:7rem 0 3rem;}}
 
-@media(max-width:720px){
-  .hero{padding:8rem 0 4rem;}
-  .hero-stats{grid-template-columns:repeat(2,1fr);}
-  .stat:nth-child(2){border-right:none;}
-  .stat:nth-child(3),.stat:nth-child(4){border-top:1px solid rgba(139,0,30,.15);}
+/* ── Stats band ── */
+.stats-band{padding:0 0 5rem;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+.stat{
+  border-radius:var(--r-card);padding:1.6rem 1.5rem;
+  transition:transform .35s cubic-bezier(.16,1,.3,1);
 }
+.stat:hover{transform:translateY(-4px);}
+.stat-value{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(2rem,3.4vw,2.9rem);font-weight:700;color:var(--ink);line-height:1;letter-spacing:-.03em;}
+.stat-value .sup{color:var(--accent);font-size:.5em;vertical-align:super;font-weight:600;}
+.stat-label{font-size:.78rem;font-weight:500;color:var(--muted);margin-top:.5rem;}
+@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
+
+/* ── Partner marquee ── */
+.marquee{padding:2.2rem 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;position:relative;z-index:2;}
+.marquee-track{display:flex;gap:3.5rem;width:max-content;animation:marquee 30s linear infinite;}
+.marquee:hover .marquee-track{animation-play-state:paused;}
+.marquee-item{
+  display:flex;align-items:center;gap:3.5rem;
+  font-family:'Bricolage Grotesque',sans-serif;font-weight:600;
+  font-size:clamp(1.2rem,2.2vw,1.7rem);letter-spacing:-.02em;color:var(--muted);white-space:nowrap;
+}
+.mq-sep{width:7px;height:7px;background:var(--accent);transform:rotate(45deg);flex-shrink:0;opacity:.7;}
+@keyframes marquee{to{transform:translateX(-50%);}}
 
 /* ── Sections ── */
-.section{padding:7rem 0;position:relative;}
-.section-divider{border:none;border-top:1px solid var(--rule-s);margin:0;}
-.section-wm{
-  position:absolute;top:50%;right:0;transform:translateY(-50%);
-  font-family:'Fraunces',serif;font-weight:900;font-size:clamp(5rem,11vw,9rem);
-  line-height:1;letter-spacing:-.05em;color:rgba(139,0,30,.04);
-  pointer-events:none;user-select:none;white-space:nowrap;z-index:0;
+.section{padding:7.5rem 0;position:relative;}
+.section-title{
+  font-family:'Bricolage Grotesque',sans-serif;font-weight:700;
+  font-size:clamp(2rem,4.4vw,3.4rem);letter-spacing:-.03em;line-height:1.04;
+  margin-bottom:3.5rem;max-width:46rem;
 }
-body.dark .section-wm{color:rgba(196,18,48,.06);}
-.section-header{
-  display:grid;grid-template-columns:5.5rem 1fr;gap:1.5rem;align-items:baseline;
-  margin-bottom:4rem;padding-bottom:1.5rem;border-bottom:1px solid var(--rule-s);position:relative;z-index:1;
-}
-.section-num{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--accent);font-weight:500;letter-spacing:.1em;}
-.section-title{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(1.8rem,3.5vw,3rem);letter-spacing:-.03em;line-height:1.05;}
-.section-title em{font-style:italic;color:var(--accent);font-weight:700;}
+.section-title em{font-style:normal;color:var(--accent);}
 
 /* ── About ── */
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;margin-left:7rem;margin-right:7rem;position:relative;z-index:1;}
-@media(max-width:900px){.about-grid{grid-template-columns:1fr;gap:2.5rem;margin-left:0;margin-right:0;}}
-.about-text p{font-size:1rem;line-height:1.72;color:var(--ink-soft);font-weight:300;margin-bottom:1.2rem;text-align:justify;}
-.about-text p strong{color:var(--ink);font-weight:600;}
-.about-text p em{font-family:'Fraunces',serif;font-style:italic;color:var(--accent);}
-.detail-block{border-left:2px solid var(--accent);padding-left:1.25rem;margin-bottom:1.75rem;}
-.detail-label{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.45rem;}
-.detail-value{font-size:.92rem;line-height:1.55;color:var(--ink);}
-.detail-value strong{font-weight:600;}
+.about-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:3.5rem;align-items:start;}
+@media(max-width:900px){.about-grid{grid-template-columns:1fr;gap:2rem;}}
+.about-text p{font-size:1.02rem;line-height:1.75;color:var(--ink-soft);font-weight:400;margin-bottom:1.25rem;}
+.about-text p strong{color:var(--ink);font-weight:700;}
+.about-text p em{color:var(--accent);font-style:normal;font-weight:600;}
+.fact-card{border-radius:var(--r-card);padding:1.9rem;display:flex;flex-direction:column;gap:1.45rem;}
+.fact{padding-left:1rem;border-left:2px solid var(--accent);}
+.fact-label{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;}
+.fact-value{font-size:.92rem;line-height:1.55;color:var(--ink);}
+.fact-value strong{font-weight:700;}
 
 /* ── Filter pills ── */
-.filter-row{display:flex;flex-wrap:wrap;gap:.6rem;margin:0 7rem 3rem 7rem;position:relative;z-index:1;}
-@media(max-width:900px){.filter-row{margin-left:0;margin-right:0;}}
+.filter-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:2.6rem;}
 .pill{
-  background:transparent;border:1px solid rgba(139,0,30,.22);color:var(--muted);
-  padding:.45rem 1rem;border-radius:999px;font-family:'JetBrains Mono',monospace;
-  font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .25s;font-weight:500;
+  border-radius:var(--r-pill);padding:.5rem 1.1rem;cursor:pointer;
+  font-family:'Manrope',sans-serif;font-size:.8rem;font-weight:600;
+  color:var(--ink-soft);border:1px solid var(--gl-edge);
+  transition:all .25s;
 }
-.pill:hover{border-color:var(--accent);color:var(--accent);}
-.pill.active{background:var(--accent);color:var(--paper);border-color:var(--accent);}
-.pill .count{margin-left:.3rem;opacity:.6;font-size:.6rem;}
+.pill:hover{color:var(--accent);border-color:var(--accent);}
+.pill.active{background:var(--fill);color:var(--on-fill);border-color:transparent;box-shadow:0 8px 24px rgba(174,15,48,.25);}
+.pill .count{margin-left:.35rem;opacity:.65;font-size:.72rem;font-family:'JetBrains Mono',monospace;}
 
 /* ── Projects ── */
-.projects{display:flex;flex-direction:column;position:relative;z-index:1;}
+.projects{display:flex;flex-direction:column;gap:.9rem;}
 .project{
-  display:grid;grid-template-columns:4.5rem 1fr 16rem;gap:2rem;
-  padding:2.25rem 0;border-top:1px solid var(--rule-s);
-  cursor:pointer;position:relative;transition:background .3s;
+  border-radius:var(--r-card);padding:1.8rem 2rem;cursor:pointer;position:relative;
+  display:grid;grid-template-columns:3.5rem 1fr 15rem auto;gap:1.5rem;align-items:start;
+  transition:transform .35s cubic-bezier(.16,1,.3,1);
 }
-.project:last-child{border-bottom:1px solid var(--rule-s);}
-.project:hover{background:rgba(139,0,30,.028);}
+.project:hover{transform:translateY(-3px);}
 .project.hidden{display:none;}
-.project::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
-  background:var(--accent);transform:scaleY(0);transform-origin:top;
-  transition:transform .38s cubic-bezier(.16,1,.3,1);
-}
-.project:hover::before{transform:scaleY(1);}
 @media(max-width:900px){
-  .project{grid-template-columns:3.5rem 1fr;padding:1.75rem 0;gap:1rem;}
-  .project-meta-col{display:none!important;}
+  .project{grid-template-columns:1fr;gap:.75rem;padding:1.4rem 1.25rem;}
+  .project-num,.project-meta-col{display:none!important;}
 }
-.project-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);padding-top:.35rem;letter-spacing:.06em;opacity:.6;}
-.project-main{padding-right:1rem;}
+.project-num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);padding-top:.45rem;}
+.project-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:clamp(1.15rem,1.8vw,1.55rem);line-height:1.12;letter-spacing:-.015em;margin-bottom:.3rem;color:var(--ink);transition:color .3s;}
+.project:hover .project-title{color:var(--accent);}
+.project-client{font-size:.78rem;font-weight:600;color:var(--accent);margin-bottom:.6rem;}
+.project-summary{font-size:.89rem;line-height:1.62;color:var(--ink-soft);max-width:32rem;}
+.project-meta-col{display:flex;flex-direction:column;gap:.7rem;align-items:flex-end;text-align:right;padding-top:.35rem;}
+.project-year{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);}
+.project-tags{display:flex;flex-wrap:wrap;gap:.35rem;justify-content:flex-end;}
+.tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;padding:.22rem .55rem;border:1px solid var(--line);border-radius:var(--r-pill);color:var(--muted);white-space:nowrap;transition:all .22s;}
+.project:hover .tag{border-color:var(--accent);color:var(--accent);}
 .project-mobile-meta{display:none;}
 @media(max-width:900px){
-  .project-main{padding-right:0;}
-  .project-mobile-meta{display:flex;flex-direction:column;gap:.65rem;margin-top:1rem;padding-top:1rem;border-top:1px dashed var(--rule-s);}
-  .mobile-year{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
-  .mobile-tags{display:flex;flex-wrap:wrap;gap:.4rem;}
+  .project-mobile-meta{display:flex;flex-direction:column;gap:.6rem;margin-top:.75rem;}
+  .mobile-year{font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--muted);}
+  .mobile-tags{display:flex;flex-wrap:wrap;gap:.35rem;}
 }
-.project-title{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(1.2rem,1.8vw,1.7rem);line-height:1.1;letter-spacing:-.02em;margin-bottom:.35rem;color:var(--ink);transition:color .3s;}
-.project:hover .project-title{color:var(--accent);}
-.project-client{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.65rem;font-weight:500;opacity:.8;}
-.project-summary{font-size:.88rem;line-height:1.62;color:var(--ink-soft);font-weight:300;max-width:30rem;}
-.project-meta-col{display:flex;flex-direction:column;gap:.75rem;align-items:flex-end;text-align:right;padding-top:.35rem;padding-right:2rem;}
-.project-year{font-family:'Fraunces',serif;font-style:italic;font-size:.95rem;color:var(--muted);}
-.project-tags{display:flex;flex-wrap:wrap;gap:.3rem;justify-content:flex-end;}
-.tag{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.04em;padding:.18rem .5rem;border:1px solid rgba(139,0,30,.18);border-radius:2px;color:var(--muted);white-space:nowrap;transition:all .22s;}
-.project:hover .tag{border-color:rgba(139,0,30,.42);color:var(--accent);}
-.detail-expand-icon{position:absolute;top:2.25rem;right:0;width:1.5rem;height:1.5rem;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:transform .3s,color .3s;font-size:1.1rem;line-height:1;}
-.project:hover .detail-expand-icon{color:var(--accent);}
-.project.expanded .detail-expand-icon{transform:rotate(45deg);color:var(--accent);}
-@media(max-width:900px){.detail-expand-icon{display:none;}}
-.project-detail{grid-column:1/-1;display:none;padding:2rem 0 1rem 6.5rem;border-top:1px dashed var(--rule-s);margin-top:1.25rem;}
-@media(max-width:900px){.project-detail{padding-left:0;}}
-.project.expanded .project-detail{display:block;}
-.project-detail-grid{display:grid;grid-template-columns:1fr 20rem;gap:3rem;}
+.expand-icon{
+  width:2rem;height:2rem;border-radius:50%;flex-shrink:0;margin-top:.15rem;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--muted);border:1px solid var(--line);
+  font-size:1.05rem;line-height:1;font-weight:300;
+  transition:transform .35s cubic-bezier(.16,1,.3,1),color .3s,border-color .3s;
+}
+.project:hover .expand-icon{color:var(--accent);border-color:var(--accent);}
+.project.expanded .expand-icon{transform:rotate(45deg);color:var(--accent);border-color:var(--accent);}
+@media(max-width:900px){.expand-icon{position:absolute;top:1.25rem;right:1.25rem;width:1.7rem;height:1.7rem;}}
+
+.project-detail{grid-column:1/-1;display:grid;grid-template-rows:0fr;transition:grid-template-rows .55s cubic-bezier(.16,1,.3,1);}
+.project-detail>div{overflow:hidden;}
+.project.expanded .project-detail{grid-template-rows:1fr;}
+.project-detail-grid{display:grid;grid-template-columns:1fr 19rem;gap:2.5rem;padding-top:1.6rem;margin-top:.4rem;border-top:1px solid var(--line);}
 @media(max-width:900px){.project-detail-grid{grid-template-columns:1fr;gap:1.5rem;}}
 .detail-bullets{list-style:none;display:flex;flex-direction:column;gap:.85rem;}
-.detail-bullets li{font-size:.92rem;line-height:1.58;color:var(--ink-soft);padding-left:1.25rem;position:relative;font-weight:300;}
-.detail-bullets li::before{content:'—';position:absolute;left:0;color:var(--accent);font-weight:500;}
-.detail-bullets li strong{color:var(--ink);font-weight:600;}
-.metric-stack{display:flex;flex-direction:column;gap:1.25rem;background:var(--bg-card);border:1px solid var(--rule-s);padding:1.75rem;border-radius:3px;}
-.metric{display:flex;flex-direction:column;gap:.3rem;padding-bottom:1.1rem;border-bottom:1px dashed var(--rule-s);}
+.detail-bullets li{font-size:.9rem;line-height:1.6;color:var(--ink-soft);padding-left:1.15rem;position:relative;}
+.detail-bullets li::before{content:'';position:absolute;left:0;top:.55em;width:6px;height:6px;background:var(--accent);transform:rotate(45deg);}
+.detail-bullets li strong{color:var(--ink);font-weight:700;}
+.metric-stack{display:flex;flex-direction:column;gap:1.1rem;border-radius:16px;padding:1.5rem;align-self:start;}
+.metric{display:flex;flex-direction:column;gap:.25rem;padding-bottom:1rem;border-bottom:1px solid var(--line);}
 .metric:last-child{padding-bottom:0;border-bottom:none;}
-.metric-value{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;color:var(--accent);line-height:1;}
-.metric-value sup{font-size:.5em;color:var(--accent-2);}
-.metric-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;}
+.metric-value{font-family:'Bricolage Grotesque',sans-serif;font-size:1.55rem;font-weight:700;color:var(--accent);line-height:1.1;letter-spacing:-.02em;}
+.metric-value sup{font-size:.55em;}
+.metric-label{font-size:.72rem;font-weight:500;color:var(--muted);}
 
-/* ── Experience ── */
-.exp-timeline{margin-left:7rem;margin-right:7rem;display:flex;flex-direction:column;position:relative;z-index:1;}
-@media(max-width:900px){.exp-timeline{margin-left:0;margin-right:0;}}
-.exp-item{display:grid;grid-template-columns:13rem 1fr;gap:3rem;padding:2.5rem 0;border-bottom:1px solid var(--rule-s);}
-.exp-item:last-child{border-bottom:none;padding-bottom:0;}
-@media(max-width:900px){.exp-item{grid-template-columns:1fr;gap:.75rem;}}
-.exp-date{font-family:'JetBrains Mono',monospace;font-size:.67rem;letter-spacing:.08em;color:var(--muted);padding-top:.35rem;text-transform:uppercase;}
-.exp-role{font-family:'Fraunces',serif;font-weight:700;font-size:1.45rem;line-height:1.15;letter-spacing:-.015em;margin-bottom:.2rem;color:var(--ink);}
-.exp-org{font-size:.88rem;color:var(--accent);font-weight:500;margin-bottom:.65rem;}
-.exp-org em{font-style:normal;color:var(--muted);font-weight:400;}
-.exp-desc{font-size:.88rem;line-height:1.68;color:var(--ink-soft);font-weight:300;max-width:40rem;text-align:justify;}
+/* ── Experience timeline ── */
+.exp-timeline{position:relative;max-width:52rem;}
+.exp-timeline::before{content:'';position:absolute;left:8px;top:10px;bottom:10px;width:1px;background:linear-gradient(180deg,var(--accent),var(--line));}
+.exp-item{position:relative;padding:0 0 3rem 2.6rem;}
+.exp-item:last-child{padding-bottom:0;}
+.exp-item::before{
+  content:'';position:absolute;left:0;top:8px;width:17px;height:17px;border-radius:50%;
+  background:var(--bg);border:2px solid var(--accent);
+  box-shadow:0 0 0 4px var(--bg);
+}
+.exp-date{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.05em;color:var(--muted);margin-bottom:.5rem;text-transform:uppercase;}
+.exp-role{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.35rem;line-height:1.15;letter-spacing:-.015em;margin-bottom:.2rem;color:var(--ink);}
+.exp-org{font-size:.88rem;color:var(--accent);font-weight:600;margin-bottom:.6rem;}
+.exp-org em{font-style:normal;color:var(--muted);font-weight:500;}
+.exp-desc{font-size:.9rem;line-height:1.7;color:var(--ink-soft);max-width:42rem;}
 
-/* ── Skills ── */
-.skills-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:3rem;margin-left:7rem;margin-right:7rem;position:relative;z-index:1;}
-@media(max-width:900px){.skills-grid{grid-template-columns:1fr;gap:2rem;margin-left:0;margin-right:0;}}
-.skill-block h3{font-family:'JetBrains Mono',monospace;font-size:.67rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;padding-bottom:.7rem;border-bottom:2px solid rgba(139,0,30,.15);}
-.skill-list{display:flex;flex-wrap:wrap;gap:.5rem 0;}
-.skill-list span{font-family:'Fraunces',serif;font-size:1.05rem;color:var(--ink-soft);font-weight:400;}
-.skill-list span:not(:last-child)::after{content:' ·';color:var(--accent);margin-left:.1rem;margin-right:.4rem;}
+/* ── Skills bento ── */
+.skills-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.1rem;}
+@media(max-width:900px){.skills-grid{grid-template-columns:1fr;}}
+.skill-block{border-radius:var(--r-card);padding:1.9rem;overflow:hidden;transition:transform .35s cubic-bezier(.16,1,.3,1);}
+.skill-block:hover{transform:translateY(-4px);}
+.skill-block h3{font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:-.01em;color:var(--ink);margin-bottom:1.1rem;}
+.skill-block.sb-tint{background-image:linear-gradient(135deg,var(--gl-hi),var(--gl-lo)),radial-gradient(120% 130% at 0% 0%,var(--spot),transparent 60%);}
+.skill-block.sb-dots{background-image:linear-gradient(135deg,var(--gl-hi),var(--gl-lo)),radial-gradient(var(--line) 1px,transparent 1px);background-size:auto,14px 14px;}
+.skill-block.sb-glow{background-image:linear-gradient(135deg,var(--gl-hi),var(--gl-lo)),radial-gradient(110% 120% at 100% 100%,var(--spot),transparent 60%);}
+.skill-list{display:flex;flex-wrap:wrap;gap:.45rem;}
+.skill-list span{
+  font-size:.8rem;font-weight:500;color:var(--ink-soft);
+  padding:.32rem .8rem;border-radius:var(--r-pill);border:1px solid var(--line);
+  transition:all .22s;
+}
+.skill-list span:hover{color:var(--accent);border-color:var(--accent);}
 
 /* ── Contact ── */
-.contact{padding:8rem 0;text-align:center;position:relative;}
-.contact-wm{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Fraunces',serif;font-weight:900;font-size:clamp(5rem,13vw,11rem);line-height:1;letter-spacing:-.05em;color:rgba(139,0,30,.05);pointer-events:none;user-select:none;white-space:nowrap;z-index:0;}
-body.dark .contact-wm{color:rgba(196,18,48,.07);}
-.contact .container{position:relative;z-index:2;}
-.contact h2{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(2.2rem,5vw,4.5rem);line-height:1.05;letter-spacing:-.04em;margin-bottom:1.75rem;}
-.contact h2 em{font-style:italic;color:var(--accent);font-weight:700;}
-.contact p{max-width:34rem;margin:0 auto 2.5rem;font-size:1rem;color:var(--ink-soft);font-weight:300;line-height:1.7;}
-.contact-email{display:inline-flex;align-items:center;gap:.6rem;font-family:'Fraunces',serif;font-style:italic;font-size:clamp(1.3rem,2.5vw,2rem);color:var(--ink);text-decoration:none;padding-bottom:.3rem;border-bottom:2px solid rgba(139,0,30,.25);transition:all .3s;}
-.contact-email:hover{color:var(--accent);border-color:var(--accent);}
+.contact{padding:9rem 0;text-align:center;position:relative;}
+.contact h2{
+  font-family:'Bricolage Grotesque',sans-serif;font-weight:700;
+  font-size:clamp(2.4rem,5.5vw,4.6rem);line-height:1.02;letter-spacing:-.035em;margin-bottom:1.6rem;
+}
+.contact h2 em{font-style:normal;color:var(--accent);}
+.contact p{max-width:34rem;margin:0 auto 2.6rem;font-size:1rem;color:var(--ink-soft);line-height:1.7;}
+.contact-email{
+  display:inline-flex;align-items:center;gap:.7rem;
+  font-family:'Bricolage Grotesque',sans-serif;font-weight:600;
+  font-size:clamp(1.1rem,2.4vw,1.7rem);letter-spacing:-.01em;
+  color:var(--ink);text-decoration:none;
+  border-radius:var(--r-pill);padding:1rem 2.1rem;
+  transition:transform .3s cubic-bezier(.16,1,.3,1),color .3s;
+  will-change:transform;
+}
+.contact-email:hover{color:var(--accent);transform:translateY(-3px);}
 .contact-email .arrow{display:inline-block;font-style:normal;transition:transform .3s;}
 .contact-email:hover .arrow{transform:translate(4px,-4px);}
-.contact-meta{margin-top:3rem;display:flex;gap:2.5rem;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);flex-wrap:wrap;}
+.contact-meta{margin-top:3rem;display:flex;gap:2.4rem;justify-content:center;font-size:.82rem;font-weight:600;color:var(--muted);flex-wrap:wrap;}
 .contact-meta a{color:var(--muted);text-decoration:none;transition:color .25s;}
 .contact-meta a:hover{color:var(--accent);}
 
 /* ── Footer ── */
-.footer{border-top:1px solid var(--rule-s);padding:1.75rem 0;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
-.footer-inner{max-width:1200px;margin:0 auto;padding:0 2.5rem;display:flex;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;}
+.footer{border-top:1px solid var(--line);padding:1.9rem 0;position:relative;z-index:2;}
+.footer-inner{
+  max-width:1200px;margin:0 auto;padding:0 2.5rem;
+  display:flex;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;
+  font-family:'JetBrains Mono',monospace;font-size:.64rem;letter-spacing:.05em;color:var(--muted);
+}
 .footer-inner a{color:var(--muted);text-decoration:none;transition:color .25s;}
 .footer-inner a:hover{color:var(--accent);}
 @media(max-width:720px){.footer-inner{padding:0 1.25rem;}}
 
 /* ── Reveal ── */
-.reveal{opacity:0;transform:translateY(20px);transition:opacity .55s cubic-bezier(.16,1,.3,1),transform .55s cubic-bezier(.16,1,.3,1);}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1);}
 .reveal.in{opacity:1;transform:none;}
-.reveal.d1{transition-delay:.06s;}.reveal.d2{transition-delay:.14s;}.reveal.d3{transition-delay:.22s;}
+.reveal.d1{transition-delay:.07s;}.reveal.d2{transition-delay:.15s;}.reveal.d3{transition-delay:.23s;}
 
-::selection{background:var(--accent);color:var(--paper);}
-@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:none;}}
+::selection{background:var(--fill);color:var(--on-fill);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:none;}}
 
-/* ── Focus visible ── */
-:focus-visible{
-  outline:2px solid var(--accent);
-  outline-offset:3px;
-  border-radius:3px;
-}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px;}
 :focus:not(:focus-visible){outline:none;}
-
-/* ── Nav active link ── */
-.topnav-links a.nav-active{color:var(--accent);}
-.topnav-links a.nav-active::after{width:100%;}
 
 /* ── Reduced motion ── */
 @media(prefers-reduced-motion:reduce){
@@ -335,63 +416,66 @@ body.dark .contact-wm{color:rgba(196,18,48,.07);}
     animation-iteration-count:1!important;
     transition-duration:.01ms!important;
   }
-  .hero-rule{width:min(44rem,85%);}
-  .hero-meta,.hero h1,.hero-tagline,.hero-lede,.hero-stats{opacity:1;transform:none;}
+  .hero h1,.hero-tagline,.hero-ctas{opacity:1;transform:none;}
+  .marquee-track{animation:none;transform:none;}
+  .aurora span{animation:none;}
+  html{scroll-behavior:auto;}
 }
 </style>
 </head>
 <body>
 
-<div id="progress-bar"></div>
+<div id="progress"></div>
+<div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
 
 <!-- Nav -->
-<nav class="topnav">
-  <div class="topnav-inner">
-    <div class="topnav-mark">db<span class="dot">.</span></div>
-    <div class="topnav-links">
-      <a href="#work"   data-i18n="nav_work">Work</a>
-      <a href="#about"  data-i18n="nav_about">About</a>
-      <a href="#experience" data-i18n="nav_exp">Experience</a>
-      <a href="#skills" data-i18n="nav_skills">Skills</a>
-      <a href="#contact" data-i18n="nav_contact">Contact</a>
-      <button class="lang-toggle"  onclick="toggleLang()"  id="langBtn"  aria-label="Switch to Spanish">ES</button>
+<nav class="topnav glass">
+  <a class="topnav-mark" href="#top" aria-label="Home">db<span class="dot">.</span></a>
+  <div class="topnav-links">
+    <a href="#work"       data-i18n="nav_work">Work</a>
+    <a href="#about"      data-i18n="nav_about">About</a>
+    <a href="#experience" data-i18n="nav_exp">Experience</a>
+    <a href="#skills"     data-i18n="nav_skills">Skills</a>
+    <a href="#contact"    data-i18n="nav_contact">Contact</a>
+    <div class="nav-actions">
+      <button class="lang-toggle"  onclick="toggleLang()"  id="langBtn"  aria-label="Cambiar a español">ES</button>
       <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" aria-label="Switch to dark mode">DARK</button>
     </div>
   </div>
 </nav>
 
 <!-- Hero -->
-<section class="hero">
-  <div class="hero-watermark" aria-hidden="true">DAVID<br>BETANCOURTH</div>
+<header class="hero" id="top">
   <div class="container">
-    <div class="hero-meta" data-i18n="hero_meta">Portfolio · 2026</div>
-    <h1>David <em>Betancourth</em><span class="period">.</span></h1>
-    <div class="hero-rule"></div>
+    <h1>David<span class="ln2">Betancourth</span></h1>
     <p class="hero-tagline">
-      <span data-i18n="tagline_1">I automate factories and train models.</span><br>
+      <span data-i18n="tagline_1">I automate factories and train models.</span>
       <strong data-i18n="tagline_2">Sometimes both at once.</strong>
     </p>
-    <p class="hero-lede" data-i18n-md="hero_lede">
-      BSc candidate in Mechatronics Engineering at <strong>Tecnológico de Monterrey, Campus Monterrey</strong>
-      (expected June 2027) and MSc candidate in <strong>Artificial Intelligence &amp; Data Science</strong>
-      at the <strong>University of Hull, United Kingdom</strong> (expected January 2027).
-      Industry projects with ABB, Schneider Electric, John Deere, Carrier, and MIT.
-      Currently based in Hull, UK. <strong>Back in Monterrey from August 2026.</strong>
-    </p>
-    <div class="hero-stats">
-      <div class="stat">
+    <div class="hero-ctas">
+      <a class="btn btn-primary magnetic" href="#work" data-i18n="cta_work">View projects</a>
+      <a class="btn btn-ghost glass magnetic" href="#contact" data-i18n="cta_contact">Get in touch</a>
+    </div>
+  </div>
+</header>
+
+<!-- Stats -->
+<section class="stats-band">
+  <div class="container">
+    <div class="stats-grid reveal in" id="statsGrid">
+      <div class="stat glass spot">
         <div class="stat-value"><span class="count" data-target="2">0</span><span class="sup">×</span></div>
         <div class="stat-label" data-i18n="stat_degrees">Active degrees</div>
       </div>
-      <div class="stat">
+      <div class="stat glass spot">
         <div class="stat-value"><span class="count" data-target="11">0</span></div>
         <div class="stat-label" data-i18n="stat_projects">Industry projects</div>
       </div>
-      <div class="stat">
+      <div class="stat glass spot">
         <div class="stat-value"><span class="count" data-target="60">0</span><span class="sup">+</span></div>
         <div class="stat-label" data-i18n="stat_mentored">Students mentored</div>
       </div>
-      <div class="stat">
+      <div class="stat glass spot">
         <div class="stat-value"><span class="count" data-target="5">0</span></div>
         <div class="stat-label" data-i18n="stat_partners">Industry partners</div>
       </div>
@@ -399,123 +483,115 @@ body.dark .contact-wm{color:rgba(196,18,48,.07);}
   </div>
 </section>
 
-<!-- About -->
-<hr class="section-divider"/>
-<section class="section reveal" id="about">
-  <div class="section-wm" aria-hidden="true">ABOUT</div>
-  <div class="container">
-    <div class="section-header">
-      <div class="section-num" data-i18n="about_num">01 / About</div>
-      <h2 class="section-title" data-i18n-md="about_title">A profile shaped <em>between two disciplines.</em></h2>
+<!-- Partner marquee -->
+<div class="marquee" aria-label="Industry partners">
+  <div class="marquee-track">
+    <div class="marquee-item">
+      <span>ABB</span><span class="mq-sep"></span>
+      <span>Schneider Electric</span><span class="mq-sep"></span>
+      <span>John Deere</span><span class="mq-sep"></span>
+      <span>Carrier</span><span class="mq-sep"></span>
+      <span>MIT</span><span class="mq-sep"></span>
+      <span>Tecnológico de Monterrey</span><span class="mq-sep"></span>
+      <span>University of Hull</span><span class="mq-sep"></span>
     </div>
+    <div class="marquee-item" aria-hidden="true">
+      <span>ABB</span><span class="mq-sep"></span>
+      <span>Schneider Electric</span><span class="mq-sep"></span>
+      <span>John Deere</span><span class="mq-sep"></span>
+      <span>Carrier</span><span class="mq-sep"></span>
+      <span>MIT</span><span class="mq-sep"></span>
+      <span>Tecnológico de Monterrey</span><span class="mq-sep"></span>
+      <span>University of Hull</span><span class="mq-sep"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Work -->
+<section class="section reveal" id="work">
+  <div class="container">
+    <h2 class="section-title" data-i18n-md="work_title"><em>What I've shipped.</em></h2>
+    <div class="filter-row">
+      <button class="pill glass active" data-filter="all"><span data-i18n="pill_all">All</span><span class="count">11</span></button>
+      <button class="pill glass" data-filter="ai"><span data-i18n="pill_ai">AI &amp; Data Science</span><span class="count">5</span></button>
+      <button class="pill glass" data-filter="industrial"><span data-i18n="pill_ind">Industrial &amp; Automation</span><span class="count">6</span></button>
+      <button class="pill glass" data-filter="featured"><span data-i18n="pill_feat">Featured</span><span class="count">7</span></button>
+    </div>
+    <div class="projects" id="projectsContainer"></div>
+  </div>
+</section>
+
+<!-- About -->
+<section class="section reveal" id="about">
+  <div class="container">
+    <h2 class="section-title" data-i18n-md="about_title">A profile shaped <em>between two disciplines.</em></h2>
     <div class="about-grid">
       <div class="about-text reveal d1">
         <p data-i18n-md="about_p1">I chose <strong>mechatronics</strong> for its scope: circuits, mechanics, software, and industrial automation all under one discipline. Throughout my degree at Tecnológico de Monterrey I worked on industry-linked projects with ABB, Schneider Electric, John Deere, Carrier, and MIT. That hands-on exposure helped me see where my interests really sat.</p>
         <p data-i18n-md="about_p2">One of those interests was data. The industrial projects I worked on generated plenty of it, and the analysis side pulled me in. With the rise of large language models and the broader AI wave, the MSc in <strong>Artificial Intelligence &amp; Data Science</strong> at Hull felt like the obvious next step.</p>
         <p data-i18n-md="about_p3">So I work the seam between both. <em>Production-grade work, ROI math included.</em></p>
       </div>
-      <div class="reveal d2">
-        <div class="detail-block">
-          <div class="detail-label" data-i18n="d_based_lbl">Based in</div>
-          <div class="detail-value" data-i18n-md="d_based_val">Hull, UK now. <strong>Returning to Monterrey, MX in August 2026.</strong></div>
+      <div class="fact-card glass spot reveal d2">
+        <div class="fact">
+          <div class="fact-label" data-i18n="d_based_lbl">Based in</div>
+          <div class="fact-value" data-i18n-md="d_based_val"><strong>Monterrey, Mexico</strong> (currently completing a summer internship in Hull, UK).</div>
         </div>
-        <div class="detail-block">
-          <div class="detail-label" data-i18n="d_summer_lbl">This summer</div>
-          <div class="detail-value" data-i18n-md="d_summer_val">Social Values Intern at <strong>Quickline Communications</strong> (Jun 8 – Jul 31 2026, Hull, UK), then back to Monterrey.</div>
+        <div class="fact">
+          <div class="fact-label" data-i18n="d_summer_lbl">This summer</div>
+          <div class="fact-value" data-i18n-md="d_summer_val">Social Values Intern at <strong>Quickline Communications</strong> (Jun 8 - Jul 31 2026, Hull, UK), then back to Monterrey.</div>
         </div>
-        <div class="detail-block">
-          <div class="detail-label" data-i18n="d_avail_lbl">Available from</div>
-          <div class="detail-value" data-i18n-md="d_avail_val"><strong>August 2026 in Monterrey.</strong> Open to internships, co-ops, and full-time roles across MX, LATAM and North America.</div>
+        <div class="fact">
+          <div class="fact-label" data-i18n="d_looking_lbl">Looking for</div>
+          <div class="fact-value" data-i18n="d_looking_val">Industrial AI, applied ML, management consulting, or research roles.</div>
         </div>
-        <div class="detail-block">
-          <div class="detail-label" data-i18n="d_looking_lbl">Looking for</div>
-          <div class="detail-value" data-i18n="d_looking_val">Industrial AI, applied ML, management consulting, or research roles.</div>
-        </div>
-        <div class="detail-block">
-          <div class="detail-label" data-i18n="d_lang_lbl">Languages</div>
-          <div class="detail-value" data-i18n="d_lang_val">Spanish (native) · English (fluent)</div>
+        <div class="fact">
+          <div class="fact-label" data-i18n="d_lang_lbl">Languages</div>
+          <div class="fact-value" data-i18n="d_lang_val">Spanish (native) · English (fluent)</div>
         </div>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- Work -->
-<hr class="section-divider"/>
-<section class="section reveal" id="work">
-  <div class="section-wm" aria-hidden="true">WORK</div>
-  <div class="container">
-    <div class="section-header">
-      <div class="section-num" data-i18n="work_num">02 / Work</div>
-      <h2 class="section-title" data-i18n-md="work_title"><em>What I've shipped.</em></h2>
-    </div>
-    <div class="filter-row">
-      <button class="pill active" data-filter="all"><span data-i18n="pill_all">All</span><span class="count">11</span></button>
-      <button class="pill" data-filter="ai"><span data-i18n="pill_ai">Data Science &amp; AI</span><span class="count">5</span></button>
-      <button class="pill" data-filter="industrial"><span data-i18n="pill_ind">Industrial &amp; Automation</span><span class="count">6</span></button>
-      <button class="pill" data-filter="featured"><span data-i18n="pill_feat">Featured</span><span class="count">7</span></button>
-    </div>
-    <div class="projects" id="projectsContainer"></div>
   </div>
 </section>
 
 <!-- Experience -->
-<hr class="section-divider"/>
 <section class="section reveal" id="experience">
-  <div class="section-wm" aria-hidden="true">EXP</div>
   <div class="container">
-    <div class="section-header">
-      <div class="section-num" data-i18n="exp_num">03 / Experience</div>
-      <h2 class="section-title" data-i18n-md="exp_title"><em>Where I've worked</em> and led.</h2>
-    </div>
+    <h2 class="section-title" data-i18n-md="exp_title"><em>Where I've worked</em> and led.</h2>
     <div class="exp-timeline">
       <div class="exp-item reveal d1">
-        <div class="exp-date">Jun – Jul 2026</div>
-        <div>
-          <div class="exp-role" data-i18n="exp1_role">Social Values Intern</div>
-          <div class="exp-org" data-i18n-md="exp1_org">Quickline Communications *· Hull, UK*</div>
-          <div class="exp-desc" data-i18n="exp1_desc">Supporting digital skills workshops in local schools and community organisations across East Yorkshire as a STEM Ambassador, contributing to digital inclusion. Producing social media content and tracking Social Return on Investment (SROI) metrics across community programmes.</div>
-        </div>
+        <div class="exp-date" data-i18n="exp1_date">Jun - Jul 2026</div>
+        <div class="exp-role" data-i18n="exp1_role">Social Values Intern</div>
+        <div class="exp-org" data-i18n-md="exp1_org">Quickline Communications *· Hull, UK*</div>
+        <div class="exp-desc" data-i18n="exp1_desc">Supporting digital skills workshops in local schools and community organisations across East Yorkshire as a STEM Ambassador, contributing to digital inclusion. Producing social media content and tracking Social Return on Investment (SROI) metrics across community programmes.</div>
       </div>
       <div class="exp-item reveal d2">
-        <div class="exp-date">Aug 2024 – Jul 2025</div>
-        <div>
-          <div class="exp-role" data-i18n="exp2_role">President</div>
-          <div class="exp-org" data-i18n-md="exp2_org">Society of Mechatronics Engineering Students (SAIMT) *· Tecnológico de Monterrey*</div>
-          <div class="exp-desc" data-i18n="exp2_desc">Directed a board of 7 directors and ~70 coordinators serving 500+ mechatronics students. Launched Congreso Nexus (first academic congress initiative), managed the Minirobotica social service programme, awarded two academic scholarships (~$5,000–$8,000 MXN/semester each), and organised integration events and career-belonging activations.</div>
-        </div>
+        <div class="exp-date" data-i18n="exp2_date">Aug 2024 - Jul 2025</div>
+        <div class="exp-role" data-i18n="exp2_role">President</div>
+        <div class="exp-org" data-i18n-md="exp2_org">Society of Mechatronics Engineering Students (SAIMT) *· Tecnológico de Monterrey*</div>
+        <div class="exp-desc" data-i18n="exp2_desc">Directed a board of 7 directors and ~70 coordinators serving 500+ mechatronics students. Launched Congreso Nexus (first academic congress initiative), managed the Minirobotica social service programme, awarded two academic scholarships (~$5,000-$8,000 MXN/semester each), and organised integration events and career-belonging activations.</div>
       </div>
       <div class="exp-item reveal d3">
-        <div class="exp-date">Aug 2024 – Jul 2025</div>
-        <div>
-          <div class="exp-role" data-i18n="exp3_role">Chair</div>
-          <div class="exp-org" data-i18n-md="exp3_org">IEEE Student Branch *· Tecnológico de Monterrey*</div>
-          <div class="exp-desc" data-i18n="exp3_desc">Organised professional development events including IEEE Day panels with senior IEEE tenure members and technical workshops. Invited as a sponsored student to the IEEE Rising Stars conference in Las Vegas (January 2025), representing the Tec de Monterrey student branch.</div>
-        </div>
+        <div class="exp-date" data-i18n="exp3_date">Aug 2024 - Jul 2025</div>
+        <div class="exp-role" data-i18n="exp3_role">Chair</div>
+        <div class="exp-org" data-i18n-md="exp3_org">IEEE Student Branch *· Tecnológico de Monterrey*</div>
+        <div class="exp-desc" data-i18n="exp3_desc">Organised professional development events including IEEE Day panels with senior IEEE tenure members and technical workshops. Invited as a sponsored student to the IEEE Rising Stars conference in Las Vegas (January 2025), representing the Tec de Monterrey student branch.</div>
       </div>
       <div class="exp-item reveal d1">
-        <div class="exp-date">Aug 2023 – Present</div>
-        <div>
-          <div class="exp-role" data-i18n="exp4_role">Peer Mentor</div>
-          <div class="exp-org" data-i18n-md="exp4_org">Tecnológico de Monterrey *· Monterrey, Mexico*</div>
-          <div class="exp-desc" data-i18n="exp4_desc">Supported 60+ first-year students across multiple degree programmes during their transition into university; provided individual follow-up and accompanied mentees to community-organised integration activities throughout the academic year.</div>
-        </div>
+        <div class="exp-date" data-i18n="exp4_date">Aug 2023 - Present</div>
+        <div class="exp-role" data-i18n="exp4_role">Peer Mentor</div>
+        <div class="exp-org" data-i18n-md="exp4_org">Tecnológico de Monterrey *· Monterrey, Mexico*</div>
+        <div class="exp-desc" data-i18n="exp4_desc">Supported 60+ first-year students across multiple degree programmes during their transition into university; provided individual follow-up and accompanied mentees to community-organised integration activities throughout the academic year.</div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Skills -->
-<hr class="section-divider"/>
 <section class="section reveal" id="skills">
-  <div class="section-wm" aria-hidden="true">SKILLS</div>
   <div class="container">
-    <div class="section-header">
-      <div class="section-num" data-i18n="skills_num">04 / Toolbox</div>
-      <h2 class="section-title" data-i18n-md="skills_title">What I <em>actually</em> use to ship.</h2>
-    </div>
+    <h2 class="section-title" data-i18n-md="skills_title">What I <em>actually</em> use to ship.</h2>
     <div class="skills-grid">
-      <div class="skill-block reveal d1">
+      <div class="skill-block glass spot sb-tint reveal d1">
         <h3 data-i18n="sk_prog">Programming &amp; ML</h3>
         <div class="skill-list">
           <span>Python</span><span>SQL</span><span>C</span><span>scikit-learn</span>
@@ -523,7 +599,7 @@ body.dark .contact-wm{color:rgba(196,18,48,.07);}
           <span>Matplotlib</span><span>Seaborn</span><span>FastAPI</span><span>Docker</span>
         </div>
       </div>
-      <div class="skill-block reveal d2">
+      <div class="skill-block glass spot reveal d2">
         <h3 data-i18n="sk_ai">Applied AI &amp; Data Science</h3>
         <div class="skill-list">
           <span>Supervised ML</span><span>CNN classification</span>
@@ -532,7 +608,7 @@ body.dark .contact-wm{color:rgba(196,18,48,.07);}
           <span>Feature engineering</span><span>REST API design</span>
         </div>
       </div>
-      <div class="skill-block reveal d1">
+      <div class="skill-block glass spot sb-dots reveal d1">
         <h3 data-i18n="sk_ind">Industrial &amp; Automation</h3>
         <div class="skill-list">
           <span>PLC programming</span><span>KUKA</span><span>ABB</span>
@@ -541,7 +617,7 @@ body.dark .contact-wm{color:rgba(196,18,48,.07);}
           <span>MATLAB / Simulink</span><span>SolidWorks</span><span>FMEA</span>
         </div>
       </div>
-      <div class="skill-block reveal d2">
+      <div class="skill-block glass spot sb-glow reveal d2">
         <h3 data-i18n="sk_std">Standards &amp; Methodology</h3>
         <div class="skill-list">
           <span>ISO 13849-1 PL d</span><span>ANSI/RIA R15.06</span>
@@ -555,11 +631,10 @@ body.dark .contact-wm{color:rgba(196,18,48,.07);}
 
 <!-- Contact -->
 <section class="contact reveal" id="contact">
-  <div class="contact-wm" aria-hidden="true">HELLO</div>
   <div class="container">
     <h2 data-i18n-md="contact_h2">Let's build <em>something useful.</em></h2>
-    <p data-i18n="contact_p">Available from August 2026 in Monterrey. Open to internships, co-op roles, research collaborations, and conversations about manufacturing data, automation, and AI.</p>
-    <a class="contact-email" href="mailto:davidf.betancourth@gmail.com">
+    <p data-i18n="contact_p">Open to internships, co-op roles, research collaborations, and conversations about manufacturing data, automation, and AI.</p>
+    <a class="contact-email glass magnetic" href="mailto:davidf.betancourth@gmail.com">
       davidf.betancourth@gmail.com<span class="arrow">↗</span>
     </a>
     <div class="contact-meta">
@@ -579,12 +654,6 @@ body.dark .contact-wm{color:rgba(196,18,48,.07);}
 </footer>
 
 <script>
-// ── Scroll progress ──
-window.addEventListener('scroll', function() {
-  document.getElementById('progress-bar').style.width =
-    (window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100) + '%';
-}, { passive: true });
-
 // ── Animated counters ──
 function animateCounter(el) {
   var target = parseInt(el.dataset.target, 10);
@@ -596,13 +665,13 @@ function animateCounter(el) {
     if (p < 1) requestAnimationFrame(step);
   }(start));
 }
-var statsEl = document.querySelector('.hero-stats');
+var statsEl = document.getElementById('statsGrid');
 if (statsEl) {
   var co = new IntersectionObserver(function(entries) {
     entries.forEach(function(e) {
       if (e.isIntersecting) { e.target.querySelectorAll('.count').forEach(animateCounter); co.unobserve(e.target); }
     });
-  }, { threshold: 0.5 });
+  }, { threshold: 0.4 });
   co.observe(statsEl);
   setTimeout(function() {
     if (statsEl.getBoundingClientRect().top < window.innerHeight)
@@ -614,94 +683,90 @@ if (statsEl) {
 var T = {
   en: {
     nav_work:'Work', nav_about:'About', nav_exp:'Experience', nav_skills:'Skills', nav_contact:'Contact',
-    hero_meta:'Portfolio · 2026',
     tagline_1:'I automate factories and train models.',
     tagline_2:'Sometimes both at once.',
-    hero_lede:'BSc candidate in Mechatronics Engineering at **Tecnológico de Monterrey, Campus Monterrey** (expected June 2027) and MSc candidate in **Artificial Intelligence & Data Science** at the **University of Hull, United Kingdom** (expected January 2027). Industry projects with ABB, Schneider Electric, John Deere, Carrier, and MIT. Currently based in Hull, UK. **Back in Monterrey from August 2026.**',
+    cta_work:'View projects',
+    cta_contact:'Get in touch',
     stat_degrees:'Active degrees', stat_projects:'Industry projects', stat_mentored:'Students mentored', stat_partners:'Industry partners',
-    about_num:'01 / About',
     about_title:'A profile shaped *between two disciplines.*',
     about_p1:'I chose **mechatronics** for its scope: circuits, mechanics, software, and industrial automation all under one discipline. Throughout my degree at Tecnológico de Monterrey I worked on industry-linked projects with ABB, Schneider Electric, John Deere, Carrier, and MIT. That hands-on exposure helped me see where my interests really sat.',
     about_p2:'One of those interests was data. The industrial projects I worked on generated plenty of it, and the analysis side pulled me in. With the rise of large language models and the broader AI wave, the MSc in **Artificial Intelligence & Data Science** at Hull felt like the obvious next step.',
     about_p3:'So I work the seam between both. *Production-grade work, ROI math included.*',
     d_based_lbl:'Based in',
-    d_based_val:'Hull, UK now. **Returning to Monterrey, MX in August 2026.**',
+    d_based_val:'**Monterrey, Mexico** (currently completing a summer internship in Hull, UK).',
     d_summer_lbl:'This summer',
-    d_summer_val:'Social Values Intern at **Quickline Communications** (Jun 8 – Jul 31 2026, Hull, UK), then back to Monterrey.',
-    d_avail_lbl:'Available from',
-    d_avail_val:'**August 2026 in Monterrey.** Open to internships, co-ops, and full-time roles across MX, LATAM and North America.',
+    d_summer_val:'Social Values Intern at **Quickline Communications** (Jun 8 - Jul 31 2026, Hull, UK), then back to Monterrey.',
     d_looking_lbl:'Looking for',
     d_looking_val:'Industrial AI, applied ML, management consulting, or research roles.',
     d_lang_lbl:'Languages',
     d_lang_val:'Spanish (native) · English (fluent)',
-    work_num:'02 / Work',
     work_title:'*What I\'ve shipped.*',
     pill_all:'All', pill_ai:'AI & Data Science', pill_ind:'Industrial & Automation', pill_feat:'Featured',
-    exp_num:'03 / Experience',
     exp_title:'*Where I\'ve worked* and led.',
+    exp1_date:'Jun - Jul 2026',
     exp1_role:'Social Values Intern',
     exp1_org:'Quickline Communications *· Hull, UK*',
     exp1_desc:'Supporting digital skills workshops in local schools and community organisations across East Yorkshire as a STEM Ambassador, contributing to digital inclusion. Producing social media content and tracking Social Return on Investment (SROI) metrics across community programmes.',
+    exp2_date:'Aug 2024 - Jul 2025',
     exp2_role:'President',
     exp2_org:'Society of Mechatronics Engineering Students (SAIMT) *· Tecnológico de Monterrey*',
-    exp2_desc:'Directed a board of 7 directors and ~70 coordinators serving 500+ mechatronics students. Launched Congreso Nexus (first academic congress initiative), managed the Minirobotica social service programme, awarded two academic scholarships (~$5,000–$8,000 MXN/semester each), and organised integration events and career-belonging activations.',
+    exp2_desc:'Directed a board of 7 directors and ~70 coordinators serving 500+ mechatronics students. Launched Congreso Nexus (first academic congress initiative), managed the Minirobotica social service programme, awarded two academic scholarships (~$5,000-$8,000 MXN/semester each), and organised integration events and career-belonging activations.',
+    exp3_date:'Aug 2024 - Jul 2025',
     exp3_role:'Chair',
     exp3_org:'IEEE Student Branch *· Tecnológico de Monterrey*',
     exp3_desc:'Organised professional development events including IEEE Day panels with senior IEEE tenure members and technical workshops. Invited as a sponsored student to the IEEE Rising Stars conference in Las Vegas (January 2025), representing the Tec de Monterrey student branch.',
+    exp4_date:'Aug 2023 - Present',
     exp4_role:'Peer Mentor',
     exp4_org:'Tecnológico de Monterrey *· Monterrey, Mexico*',
     exp4_desc:'Supported 60+ first-year students across multiple degree programmes during their transition into university; provided individual follow-up and accompanied mentees to community-organised integration activities throughout the academic year.',
-    skills_num:'04 / Toolbox',
     skills_title:'What I *actually* use to ship.',
     sk_prog:'Programming & ML', sk_ai:'Applied AI & Data Science', sk_ind:'Industrial & Automation', sk_std:'Standards & Methodology',
     contact_h2:'Let\'s build *something useful.*',
-    contact_p:'Available from August 2026 in Monterrey. Open to internships, co-op roles, research collaborations, and conversations about manufacturing data, automation, and AI.',
+    contact_p:'Open to internships, co-op roles, research collaborations, and conversations about manufacturing data, automation, and AI.',
     footer_built:'Designed & built by hand'
   },
   es: {
     nav_work:'Proyectos', nav_about:'Sobre mí', nav_exp:'Experiencia', nav_skills:'Habilidades', nav_contact:'Contacto',
-    hero_meta:'Portafolio · 2026',
     tagline_1:'Automatizo fábricas y entreno modelos de IA.',
     tagline_2:'A veces las dos a la vez.',
-    hero_lede:'Estudiante de Ingeniería Mecatrónica en el **Tecnológico de Monterrey, Campus Monterrey** (graduación esperada junio 2027) y candidato al MSc en **Inteligencia Artificial y Ciencia de Datos** en la **University of Hull, Reino Unido** (graduación esperada enero 2027). Proyectos industriales con ABB, Schneider Electric, John Deere, Carrier y MIT durante mi formación universitaria. Actualmente en Hull, UK. **De vuelta en Monterrey desde agosto 2026.**',
+    cta_work:'Ver proyectos',
+    cta_contact:'Hablemos',
     stat_degrees:'Títulos en curso', stat_projects:'Proyectos industriales', stat_mentored:'Estudiantes mentoreados', stat_partners:'Socios industriales',
-    about_num:'01 / Sobre mí',
     about_title:'Un perfil forjado *entre dos disciplinas.*',
     about_p1:'Elegí **mecatrónica** por su alcance: circuitos, mecánica, software y automatización industrial, todo en una misma carrera. A lo largo de mi formación en el Tecnológico de Monterrey participé en proyectos vinculados con la industria con ABB, Schneider Electric, John Deere, Carrier y MIT. Esa experiencia me ayudó a identificar las áreas que más me interesan.',
     about_p2:'Una de ellas fueron los datos. Los proyectos industriales en los que participé generaban mucha información, y el análisis de esa información me fue atrayendo cada vez más. Con el surgimiento de los modelos de lenguaje y el auge de la inteligencia artificial, el MSc en **Inteligencia Artificial y Ciencia de Datos** en Hull me pareció el siguiente paso natural.',
     about_p3:'Así que trabajo donde se unen las dos. *Proyectos reales, resultados medibles.*',
     d_based_lbl:'Ubicación',
-    d_based_val:'Hull, UK actualmente. **Regresando a Monterrey, MX en agosto 2026.**',
+    d_based_val:'**Monterrey, México** (actualmente concluyendo una estancia de verano en Hull, UK).',
     d_summer_lbl:'Este verano',
-    d_summer_val:'Pasante de Valores Sociales en **Quickline Communications** (8 jun – 31 jul 2026, Hull, UK), y de vuelta a Monterrey.',
-    d_avail_lbl:'Disponible desde',
-    d_avail_val:'**Agosto 2026 en Monterrey.** Disponible para prácticas, proyectos y posiciones de tiempo completo en México, LATAM y Norteamérica.',
+    d_summer_val:'Pasante de Valores Sociales en **Quickline Communications** (8 jun - 31 jul 2026, Hull, UK), y de vuelta a Monterrey.',
     d_looking_lbl:'Buscando',
     d_looking_val:'IA Industrial, ML aplicado, consultoría o investigación.',
     d_lang_lbl:'Idiomas',
     d_lang_val:'Español (nativo) · Inglés (fluido)',
-    work_num:'02 / Proyectos',
     work_title:'*Lo que he construido.*',
     pill_all:'Todos', pill_ai:'IA y Datos', pill_ind:'Industrial y Automatización', pill_feat:'Destacados',
-    exp_num:'03 / Experiencia',
     exp_title:'*Dónde he trabajado* y liderado.',
+    exp1_date:'Jun - Jul 2026',
     exp1_role:'Social Values Intern',
     exp1_org:'Quickline Communications *· Hull, UK*',
     exp1_desc:'Apoyo con talleres de habilidades digitales en escuelas locales y organizaciones comunitarias de East Yorkshire como Embajador STEM, contribuyendo a la inclusión digital. Producción de contenido para redes sociales y seguimiento de métricas de Retorno Social sobre la Inversión (SROI) en programas comunitarios.',
+    exp2_date:'Ago 2024 - Jul 2025',
     exp2_role:'Presidente',
     exp2_org:'Sociedad de Alumnos de Ingeniería Mecatrónica (SAIMT) *· Tecnológico de Monterrey*',
-    exp2_desc:'Dirigí un consejo de 7 directores y ~70 coordinadores al servicio de más de 500 estudiantes de mecatrónica. Lancé el Congreso Nexus (primera iniciativa de congreso académico), administré el programa de servicio social Minirobotica, otorgué dos becas académicas (~$5,000–$8,000 MXN/semestre cada una) y organicé eventos de integración y activaciones de identidad profesional.',
+    exp2_desc:'Dirigí un consejo de 7 directores y ~70 coordinadores al servicio de más de 500 estudiantes de mecatrónica. Lancé el Congreso Nexus (primera iniciativa de congreso académico), administré el programa de servicio social Minirobotica, otorgué dos becas académicas (~$5,000-$8,000 MXN/semestre cada una) y organicé eventos de integración y activaciones de identidad profesional.',
+    exp3_date:'Ago 2024 - Jul 2025',
     exp3_role:'Presidente de Rama Estudiantil',
     exp3_org:'IEEE Student Branch *· Tecnológico de Monterrey*',
     exp3_desc:'Organicé eventos de desarrollo profesional, incluyendo paneles del Día IEEE con miembros de larga trayectoria y talleres técnicos. Invitado como estudiante patrocinado a la conferencia IEEE Rising Stars en Las Vegas (enero 2025), representando a la rama estudiantil del Tecnológico de Monterrey.',
+    exp4_date:'Ago 2023 - Presente',
     exp4_role:'Peer Mentor',
     exp4_org:'Tecnológico de Monterrey *· Monterrey, México*',
     exp4_desc:'Acompañé a más de 60 estudiantes de primer año de distintas carreras en su transición a la universidad; realicé seguimiento individual y acompañé a los mentorados en actividades de integración organizadas por la comunidad a lo largo del año académico.',
-    skills_num:'04 / Herramientas',
     skills_title:'Lo que *realmente* uso en mis proyectos.',
     sk_prog:'Programación y ML', sk_ai:'IA Aplicada y Ciencia de Datos', sk_ind:'Industrial y Automatización', sk_std:'Estándares y Metodología',
     contact_h2:'Construyamos *algo útil.*',
-    contact_p:'Disponible desde agosto 2026 en Monterrey. Abierto a prácticas, co-ops, colaboraciones de investigación y conversaciones sobre datos industriales, automatización e IA.',
+    contact_p:'Abierto a prácticas, co-ops, colaboraciones de investigación y conversaciones sobre datos industriales, automatización e IA.',
     footer_built:'Diseñado y construido a mano'
   }
 };
@@ -745,6 +810,7 @@ function setLanguage(lang) {
     if (T[lang][key] !== undefined) setContent(el, T[lang][key]);
   });
 
+  updateThemeBtn();
   renderProjects(currentFilter);
 
   try { localStorage.setItem('lang', lang); } catch(e) {}
@@ -772,7 +838,7 @@ var PROJECTS = [
       metrics:[{value:'3',label:'Formatos de audio'},{value:'100%',label:'Código abierto'},{value:'FastAPI + Docker',label:'Stack de producción'}]
     }
   },
-  { id:'videogames', cat:'ai', featured:true, year:'Feb – May 2026', tags:['scikit-learn','Pipeline','Random Forest','K-means'],
+  { id:'videogames', cat:'ai', featured:true, year:'Feb - May 2026', tags:['scikit-learn','Pipeline','Random Forest','K-means'],
     en:{ title:'Video Game Sales: Regression & Clustering', client:'University of Hull · Understanding AI',
       summary:'Compared four regression families on 6,893 titles; built a ColumnTransformer + Pipeline; K-means surfaced 4 interpretable market segments with silhouette 0.52.',
       bullets:[
@@ -794,7 +860,7 @@ var PROJECTS = [
       metrics:[{value:'0.46',label:'R² Random Forest'},{value:'0.49M',label:'MAE (unidades)'},{value:'0.52',label:'Mejor Silhouette'}]
     }
   },
-  { id:'cnn', cat:'ai', featured:true, year:'Feb – May 2026', tags:['Keras','TensorFlow 2.19','CNN','Error Analysis'],
+  { id:'cnn', cat:'ai', featured:true, year:'Feb - May 2026', tags:['Keras','TensorFlow 2.19','CNN','Error Analysis'],
     en:{ title:'Emergency Vehicle CNN Classifier', client:'University of Hull · Understanding AI',
       summary:'Custom regularised CNN beat the 25M-parameter baseline. Batch Norm, Dropout, L2 and Early Stopping. Analysed all 40 misclassified test images.',
       bullets:[
@@ -814,7 +880,7 @@ var PROJECTS = [
       metrics:[{value:'0.84',label:'Accuracy en prueba'},{value:'0.97',label:'Precisión'},{value:'40 / 247',label:'Mal clasificadas'}]
     }
   },
-  { id:'census', cat:'ai', featured:true, year:'Feb – May 2026', tags:['pandas','Statistical Tests','Policy'],
+  { id:'census', cat:'ai', featured:true, year:'Feb - May 2026', tags:['pandas','Statistical Tests','Policy'],
     en:{ title:'Census Demographic Analysis', client:'University of Hull · Fundamentals of DS',
       summary:'Cleaned 8,877-row census across 2,945 households. Binomial test p = 2.55e-56 on unemployment; chi-square confirmed gender disparity. Two evidence-backed policy recommendations.',
       bullets:[
@@ -836,7 +902,7 @@ var PROJECTS = [
       metrics:[{value:'2.55e-56',label:'Valor p binomial'},{value:'χ² = 19.13',label:'Disparidad de género'},{value:'75%',label:'Aumento mortalidad 10 años'}]
     }
   },
-  { id:'preprocessing', cat:'ai', year:'Feb – May 2026', tags:['Python stdlib','JSON','Defensive code'],
+  { id:'preprocessing', cat:'ai', year:'Feb - May 2026', tags:['Python stdlib','JSON','Defensive code'],
     en:{ title:'Customer Data Preprocessing Pipeline', client:'University of Hull · Programming for DS',
       summary:'1,000-record CSV-to-JSON pipeline using only the Python standard library. Defensive try/except per row, anomaly detection on 252 expired cards, derived socioeconomic metric.',
       bullets:[
@@ -858,7 +924,7 @@ var PROJECTS = [
       metrics:[{value:'1,000',label:'Registros procesados'},{value:'252',label:'Tarjetas marcadas'},{value:'246 / 754',label:'Jubilados / empleados'}]
     }
   },
-  { id:'abb', cat:'industrial', featured:true, year:'Jan – May 2025', tags:['ABB IRB 4600','PackML','Cognex Vision','PLC'],
+  { id:'abb', cat:'industrial', featured:true, year:'Jan - May 2025', tags:['ABB IRB 4600','PackML','Cognex Vision','PLC'],
     en:{ title:'Automated Robotic Packaging Cell', client:'ABB · Tecnológico de Monterrey',
       summary:'Replaced two manual operators with an ABB IRB 4600 cell. PackML control, Cognex In-Sight inspection, CAT 3+ safety. 99.5% OEE in simulation; 1.8-year ROI.',
       bullets:[
@@ -878,12 +944,12 @@ var PROJECTS = [
       metrics:[{value:'24',suffix:'/min',label:'Botellas por minuto'},{value:'99.5%',label:'OEE simulado'},{value:'1.8 años',label:'Retorno de inversión'}]
     }
   },
-  { id:'schneider', cat:'industrial', featured:true, year:'Jan – Jun 2025', tags:['Lexium cobot','Machine Vision','FMEA','Digital Twin'],
+  { id:'schneider', cat:'industrial', featured:true, year:'Jan - Jun 2025', tags:['Lexium cobot','Machine Vision','FMEA','Digital Twin'],
     en:{ title:'Vision-Based Quality Inspection (WS9)', client:'Schneider Electric · Tecnológico de Monterrey',
       summary:'Automated the bottleneck of a circuit-breaker line. Inverted-mount cobot for overhead inspection, full digital twin, FMEA across mechanical/vision/safety risks.',
       bullets:[
         ['Developed',' a vision-based inspection system using a Lexium cobot (overhead inverted mount), PLC control, and smart cameras to automate WS9, the line\'s bottleneck.'],
-        ['Cut',' inspection time from 1.5 hours to under 25 minutes per unit (>75% reduction), targeting line efficiency from 65% to 75–80%.'],
+        ['Cut',' inspection time from 1.5 hours to under 25 minutes per unit (>75% reduction), targeting line efficiency from 65% to 75-80%.'],
         ['Validated',' the system with a full digital twin; ran an FMEA across mechanical, vision and safety risks; confirmed ROI > 40%.']
       ],
       metrics:[{value:'75%',label:'Inspection time cut'},{value:'40%+',label:'Projected ROI'},{value:'65→80%',label:'Line efficiency target'}]
@@ -892,7 +958,7 @@ var PROJECTS = [
       summary:'Automatizó el cuello de botella de una línea de interruptores. Cobot montado invertido para inspección aérea, gemelo digital completo, FMEA de riesgos mecánicos, de visión y de seguridad.',
       bullets:[
         ['Desarrollé',' un sistema de inspección por visión usando un cobot Lexium (montado invertido), control PLC y cámaras inteligentes para automatizar el WS9, el cuello de botella de la línea.'],
-        ['Reduje',' el tiempo de inspección de 1.5 horas a menos de 25 minutos por unidad (>75% de reducción), apuntando a una eficiencia de línea del 75–80%.'],
+        ['Reduje',' el tiempo de inspección de 1.5 horas a menos de 25 minutos por unidad (>75% de reducción), apuntando a una eficiencia de línea del 75-80%.'],
         ['Validé',' el sistema con un gemelo digital completo; ejecuté un FMEA de riesgos mecánicos, de visión y de seguridad; confirmé ROI > 40%.']
       ],
       metrics:[{value:'75%',label:'Reducción tiempo inspección'},{value:'40%+',label:'ROI proyectado'},{value:'65→80%',label:'Meta eficiencia de línea'}]
@@ -918,7 +984,7 @@ var PROJECTS = [
       metrics:[{value:'KUKA + PLC',label:'Stack'},{value:'MIT',label:'Socio de investigación'},{value:'Gemelo digital',label:'Método de validación'}]
     }
   },
-  { id:'deere', cat:'industrial', featured:true, year:'Aug – Nov 2024', tags:['STM32','FreeRTOS','PID Control','Sensor Fusion'],
+  { id:'deere', cat:'industrial', featured:true, year:'Aug - Nov 2024', tags:['STM32','FreeRTOS','PID Control','Sensor Fusion'],
     en:{ title:'Project DAMM: Autonomous Mobile Vehicle', client:'John Deere · Tecnológico de Monterrey',
       summary:'Autonomous prototype for industrial material transport. STM32 + FreeRTOS scheduling, PID dual-loop control, sensor-fused obstacle avoidance, dual auto/manual operation.',
       bullets:[
@@ -938,7 +1004,7 @@ var PROJECTS = [
       metrics:[{value:'2',label:'Lazos de control (PID)'},{value:'4',label:'Sensores integrados'},{value:'Dual',label:'Modos auto / manual'}]
     }
   },
-  { id:'deere-thermal', cat:'industrial', year:'Aug – Dec 2024', tags:['Thermodynamics','Sensor-based Control','Simulation'],
+  { id:'deere-thermal', cat:'industrial', year:'Aug - Dec 2024', tags:['Thermodynamics','Sensor-based Control','Simulation'],
     en:{ title:'Thermal Control for Tractor Cabin', client:'John Deere · Tecnológico de Monterrey',
       summary:'First-principles thermal modelling to maintain cabin temperature at 50°C in 45°C ambient. Specified the required convection coefficient.',
       bullets:[
@@ -958,24 +1024,24 @@ var PROJECTS = [
       metrics:[{value:'50°C',label:'Temperatura objetivo cabina'},{value:'45°C',label:'Temperatura ambiente'},{value:'35.12 W/m²K',label:'Coeficiente de convección'}]
     }
   },
-  { id:'carrier', cat:'industrial', year:'Feb – Apr 2024', tags:['SolidWorks','FEA','Materials Selection'],
+  { id:'carrier', cat:'industrial', year:'Feb - Apr 2024', tags:['SolidWorks','FEA','Materials Selection'],
     en:{ title:'Brazing Torch Industrial Fixture', client:'Carrier · Tecnológico de Monterrey',
-      summary:'Designed a safety fixture in direct response to a real workplace incident. CAD model, 3D-printed prototype, finite-element thermal and structural validation.',
+      summary:'Safety-oriented fixture for industrial brazing operations. CAD model, 3D-printed prototype, finite-element thermal and structural validation.',
       bullets:[
-        ['Designed',' a safety-oriented industrial torch holder in response to a real workplace incident (operator first-degree burn, July 2023).'],
+        ['Designed',' a safety-oriented industrial torch holder to reduce burn risk in manual brazing operations.'],
         ['Applied',' materials selection methodology, SolidWorks CAD, 3D-printed PLA prototyping, and finite-element thermal / structural simulations.'],
         ['Delivered',' a manufacturable design ready for production line deployment.']
       ],
-      metrics:[{value:'1',label:'Incident addressed'},{value:'FEA',label:'Validation method'},{value:'PLA',label:'Prototype material'}]
+      metrics:[{value:'Safety',label:'Design driver'},{value:'FEA',label:'Validation method'},{value:'PLA',label:'Prototype material'}]
     },
     es:{ title:'Fixture Industrial para Soplete de Soldadura', client:'Carrier · Tecnológico de Monterrey',
-      summary:'Diseñó un fixture de seguridad en respuesta directa a un incidente real en planta. Modelo CAD, prototipo impreso en 3D, validación FEA térmica y estructural.',
+      summary:'Fixture de seguridad para operaciones industriales de soldadura fuerte. Modelo CAD, prototipo impreso en 3D, validación FEA térmica y estructural.',
       bullets:[
-        ['Diseñé',' un soporte de soplete industrial orientado a la seguridad en respuesta a un incidente real en planta (quemadura de primer grado a operador, julio 2023).'],
+        ['Diseñé',' un soporte de soplete industrial orientado a la seguridad para reducir el riesgo de quemaduras en operaciones manuales de soldadura fuerte.'],
         ['Apliqué',' metodología de selección de materiales, CAD en SolidWorks, prototipado en PLA con impresión 3D y simulaciones FEA térmicas / estructurales.'],
         ['Entregué',' un diseño manufacturable listo para despliegue en línea de producción.']
       ],
-      metrics:[{value:'1',label:'Incidente abordado'},{value:'FEA',label:'Método de validación'},{value:'PLA',label:'Material del prototipo'}]
+      metrics:[{value:'Seguridad',label:'Enfoque del diseño'},{value:'FEA',label:'Método de validación'},{value:'PLA',label:'Material del prototipo'}]
     }
   }
 ];
@@ -997,7 +1063,7 @@ function makeTag(text) {
   return span;
 }
 
-// ── Reveal observer (declared before renderProjects needs it) ──
+// ── Reveal observer ──
 var revealObserver = new IntersectionObserver(function(entries) {
   entries.forEach(function(e) {
     if (e.isIntersecting) { e.target.classList.add('in'); revealObserver.unobserve(e.target); }
@@ -1005,6 +1071,32 @@ var revealObserver = new IntersectionObserver(function(entries) {
 }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
 document.querySelectorAll('.reveal').forEach(function(el) { revealObserver.observe(el); });
+
+// ── Cursor spotlight on glass tiles (direct style write, no state) ──
+function attachSpot(el) {
+  el.addEventListener('pointermove', function(e) {
+    var r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  });
+}
+document.querySelectorAll('.spot').forEach(attachSpot);
+
+// ── Magnetic buttons (transform only, reduced-motion aware) ──
+var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+function attachMagnetic(el) {
+  el.addEventListener('pointermove', function(e) {
+    if (prefersReduced.matches) return;
+    var r = el.getBoundingClientRect();
+    var dx = (e.clientX - r.left - r.width / 2) / r.width;
+    var dy = (e.clientY - r.top - r.height / 2) / r.height;
+    el.style.transform = 'translate(' + (dx * 6) + 'px,' + (dy * 5) + 'px)';
+  });
+  el.addEventListener('pointerleave', function() {
+    el.style.transform = '';
+  });
+}
+document.querySelectorAll('.magnetic').forEach(attachMagnetic);
 
 // ── Render projects ──
 function renderProjects(filter) {
@@ -1022,7 +1114,7 @@ function renderProjects(filter) {
   visible.forEach(function(p, idx) {
     var d = p[lang];
     var el = document.createElement('div');
-    el.className = 'project reveal';
+    el.className = 'project glass spot reveal';
     el.dataset.cat = p.cat;
 
     var numDiv = document.createElement('div');
@@ -1074,12 +1166,14 @@ function renderProjects(filter) {
     el.appendChild(metaCol);
 
     var icon = document.createElement('div');
-    icon.className = 'detail-expand-icon';
+    icon.className = 'expand-icon';
     icon.textContent = '+';
+    icon.setAttribute('aria-hidden', 'true');
     el.appendChild(icon);
 
     var detail = document.createElement('div');
     detail.className = 'project-detail';
+    var detailInner = document.createElement('div');
     var grid = document.createElement('div');
     grid.className = 'project-detail-grid';
 
@@ -1089,7 +1183,7 @@ function renderProjects(filter) {
     grid.appendChild(ul);
 
     var metricStack = document.createElement('div');
-    metricStack.className = 'metric-stack';
+    metricStack.className = 'metric-stack glass';
     (d.metrics || []).forEach(function(m) {
       var mDiv = document.createElement('div');
       mDiv.className = 'metric';
@@ -1109,12 +1203,26 @@ function renderProjects(filter) {
       metricStack.appendChild(mDiv);
     });
     grid.appendChild(metricStack);
-    detail.appendChild(grid);
+    detailInner.appendChild(grid);
+    detail.appendChild(detailInner);
     el.appendChild(detail);
 
-    el.addEventListener('click', function() { el.classList.toggle('expanded'); });
+    // toggle + keyboard support
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-expanded', 'false');
+    function toggle() {
+      el.classList.toggle('expanded');
+      el.setAttribute('aria-expanded', el.classList.contains('expanded') ? 'true' : 'false');
+    }
+    el.addEventListener('click', toggle);
+    el.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+    });
+
     container.appendChild(el);
     revealObserver.observe(el);
+    attachSpot(el);
   });
 }
 
@@ -1128,20 +1236,29 @@ document.querySelectorAll('.pill').forEach(function(btn) {
 });
 
 // ── Theme toggle ──
-function toggleTheme() {
-  document.body.classList.toggle('dark');
-  var isDark = document.body.classList.contains('dark');
+function updateThemeBtn() {
+  var isDark = document.documentElement.dataset.theme === 'dark';
   var btn = document.getElementById('themeBtn');
-  btn.textContent = isDark ? 'LIGHT' : 'DARK';
-  btn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
-  try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch(e) {}
+  if (currentLang === 'es') {
+    btn.textContent = isDark ? 'CLARO' : 'OSCURO';
+    btn.setAttribute('aria-label', isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+  } else {
+    btn.textContent = isDark ? 'LIGHT' : 'DARK';
+    btn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+}
+function toggleTheme() {
+  var next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  updateThemeBtn();
+  try { localStorage.setItem('theme', next); } catch(e) {}
 }
 
 // ── Language toggle ──
 function toggleLang() {
   var next = currentLang === 'en' ? 'es' : 'en';
   setLanguage(next);
-  document.getElementById('langBtn').setAttribute('aria-label', next === 'en' ? 'Switch to Spanish' : 'Switch to English');
+  document.getElementById('langBtn').setAttribute('aria-label', next === 'en' ? 'Cambiar a español' : 'Switch to English');
 }
 
 // ── Nav active state via IntersectionObserver ──
@@ -1166,33 +1283,15 @@ if (sections.length) {
   sections.forEach(function(s) { navObserver.observe(s.el); });
 }
 
-// ── Keyboard support for project cards ──
-function addProjectKeyboard(el) {
-  el.setAttribute('tabindex', '0');
-  el.setAttribute('role', 'button');
-  el.setAttribute('aria-expanded', 'false');
-  el.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      el.classList.toggle('expanded');
-      el.setAttribute('aria-expanded', el.classList.contains('expanded') ? 'true' : 'false');
-    }
-  });
-  el.addEventListener('click', function() {
-    el.setAttribute('aria-expanded', el.classList.contains('expanded') ? 'true' : 'false');
-  });
-}
-
-// Patch renderProjects to add keyboard support after each render
-var _origRender = renderProjects;
-renderProjects = function(filter) {
-  _origRender(filter);
-  document.querySelectorAll('.project').forEach(addProjectKeyboard);
-};
-
 // ── Init ──
-try { if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark'); var tb = document.getElementById('themeBtn'); tb.textContent = 'LIGHT'; tb.setAttribute('aria-label','Switch to light mode'); } } catch(e) {}
-try { var savedLang = localStorage.getItem('lang'); if (savedLang === 'es') { setLanguage('es'); } else { renderProjects('all'); } } catch(e) { renderProjects('all'); }
+updateThemeBtn();
+var initialLang = 'en';
+try {
+  var savedLang = localStorage.getItem('lang');
+  if (savedLang === 'es' || savedLang === 'en') initialLang = savedLang;
+  else if ((navigator.language || '').toLowerCase().indexOf('es') === 0) initialLang = 'es';
+} catch(e) {}
+if (initialLang === 'es') { setLanguage('es'); } else { renderProjects('all'); }
 </script>
 </body>
 </html>
